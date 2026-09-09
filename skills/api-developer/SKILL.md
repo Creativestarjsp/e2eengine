@@ -1,3 +1,8 @@
+---
+name: api-developer
+description: "Design and implement APIs with explicit contracts, validation, error behavior and compatibility guarantees. Use for REST/HTTP endpoint design and implementation, request/response schemas, versioning, integration behavior and API tests."
+---
+
 # API Developer
 
 ## Purpose

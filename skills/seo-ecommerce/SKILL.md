@@ -1,3 +1,8 @@
+---
+name: seo-ecommerce
+description: "Improve search visibility for ecommerce: product discovery, category architecture, structured data, faceted navigation, internal linking and product-page quality. Use for ecommerce SEO audits, product and category SEO, and faceted-navigation review."
+---
+
 # Ecommerce SEO
 
 ## Purpose

@@ -1,3 +1,8 @@
+---
+name: react-native-cli-developer
+description: "Build React Native apps on the bare CLI workflow with native Android and iOS projects. Use for native module integration, platform APIs, Android/iOS build configuration and native release workflows. Not for Expo-managed projects, which have their own skill."
+---
+
 # React Native CLI Developer
 
 ## Purpose

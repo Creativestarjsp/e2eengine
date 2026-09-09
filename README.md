@@ -204,7 +204,7 @@ P6  Repeated benchmark
 PROVEN
 ```
 
-The automated **E2E Proof Gate** runs P0-P2 across Python 3.10, 3.11, and 3.12. The separate **E2E Real Agent Proof** workflow is manual and cost-bearing: it runs real SD1/SD3 agents against a disposable repository and stores evidence without pushing agent changes to `main`.
+The automated **E2E Proof Gate** runs P0-P2 across Python 3.9, 3.10, 3.11, and 3.12. The separate **E2E Real Agent Proof** workflow is manual and cost-bearing: it runs real SD1/SD3 agents against a disposable repository and stores evidence without pushing agent changes to `main`.
 
 A production-proof claim requires the thresholds and evidence defined in [`architecture/PROOF-STANDARD.md`](architecture/PROOF-STANDARD.md), including repeated real-agent tasks and recovery scenarios. GitHub Actions supports matrix testing and persistent workflow artifacts, which E2E uses to make this evidence reproducible and inspectable. citeturn0search2turn0search0
 
@@ -228,7 +228,7 @@ See [`architecture/CI-SELF-HEAL.md`](architecture/CI-SELF-HEAL.md) for the opera
 
 ### Requirements
 
-- Python 3.10+
+- Python 3.9+
 - Git
 - `pytest` for running the test suite
 - Claude Code and/or Codex when using external agent runtimes
@@ -239,11 +239,24 @@ See [`architecture/CI-SELF-HEAL.md`](architecture/CI-SELF-HEAL.md) for the opera
 python -m pip install -e .
 ```
 
+### Set up a project
+
+```bash
+e2e init                              # writes e2e.json and .e2e/
+e2e init --skills-path shared/skills  # when skills live somewhere else
+```
+
+`init` records where this project keeps its skills. Discovery searches
+`skills/` and `.e2e/skills/` by default; override with `skills_paths` in
+`e2e.json`, or with the `E2E_SKILLS_PATH` environment variable (`PATH`
+syntax, highest precedence).
+
 ### Inspect the runtime
 
 ```bash
 e2e doctor
 e2e status
+e2e skill diagnose   # what the registry found, and why it found nothing
 ```
 
 ### Build repository intelligence

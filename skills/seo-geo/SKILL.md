@@ -1,3 +1,8 @@
+---
+name: seo-geo
+description: "Assess how well a site can be discovered, understood and cited by search engines and AI answer systems. Use for AI-search readiness audits, citability review, crawler and fetcher access review, llms.txt evaluation, and entity or brand clarity."
+---
+
 # SEO GEO / AI Search Readiness
 
 ## Purpose

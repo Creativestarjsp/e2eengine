@@ -1,3 +1,8 @@
+---
+name: seo-content
+description: "Improve content for search intent, usefulness, originality, expertise signals, internal linking and AI-search citability without keyword stuffing. Use for content audits, search-intent analysis, content briefs, thin or duplicate content review, and refresh planning."
+---
+
 # SEO Content
 
 ## Purpose

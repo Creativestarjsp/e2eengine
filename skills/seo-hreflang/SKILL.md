@@ -1,3 +1,8 @@
+---
+name: seo-hreflang
+description: "Review multilingual and multi-region site architecture for correct language and region targeting, hreflang relationships, canonical consistency and URL structure. Use when a site serves multiple languages, countries or regional versions."
+---
+
 # SEO Hreflang / International
 
 ## Purpose

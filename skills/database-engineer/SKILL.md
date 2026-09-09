@@ -1,3 +1,8 @@
+---
+name: database-engineer
+description: "Design correct, performant, migration-safe data models, queries, indexes and constraints. Use for schema design, migrations, query optimization, indexing, data integrity, persistence decisions and database testing."
+---
+
 # Database Engineer
 
 ## Purpose

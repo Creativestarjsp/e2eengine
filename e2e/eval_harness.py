@@ -2,17 +2,77 @@ from __future__ import annotations
 
 import json
 import math
+import shutil
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Any, Callable
 
 SCHEMA_VERSION = "1.0"
 
+#: Suites write ``${python}`` so a case runs under the interpreter that is
+#: executing the harness, instead of whichever ``python`` happens to be on PATH
+#: — or, on a stock macOS box, no ``python`` at all.
+PYTHON_PLACEHOLDER = "${python}"
+_PYTHON_ALIASES = {PYTHON_PLACEHOLDER, "python", "python3"}
+
+
+def resolve_command(command: list[str]) -> list[str]:
+    """Substitute the interpreter placeholder in argv[0].
+
+    A bare ``python`` or ``python3`` is treated as the placeholder too, so
+    suites written before the placeholder existed keep working on systems where
+    only one of those names is installed.
+    """
+    if not command:
+        return command
+    head, *rest = command
+    if head in _PYTHON_ALIASES and not shutil.which(head):
+        return [sys.executable, *rest]
+    if head == PYTHON_PLACEHOLDER:
+        return [sys.executable, *rest]
+    return list(command)
+
 
 def _run(root: Path, command: list[str], timeout: int = 120) -> dict[str, Any]:
+    """Run one case. Environment problems become failed cases, not tracebacks.
+
+    A missing binary or a timeout is a result the suite should report with
+    evidence — the harness exists to gather evidence, so it must not be the
+    thing that crashes.
+    """
+    command = resolve_command(command)
     started = time.perf_counter()
-    proc = subprocess.run(command, cwd=root, text=True, capture_output=True, timeout=timeout, check=False)
+    try:
+        proc = subprocess.run(command, cwd=root, text=True, capture_output=True, timeout=timeout, check=False)
+    except FileNotFoundError as exc:
+        return {
+            "returncode": 127,
+            "stdout": "",
+            "stderr": f"command not found: {command[0]!r} ({exc})",
+            "latency_seconds": round(time.perf_counter() - started, 4),
+            "error": "command-not-found",
+            "command": command,
+        }
+    except PermissionError as exc:
+        return {
+            "returncode": 126,
+            "stdout": "",
+            "stderr": f"command not executable: {command[0]!r} ({exc})",
+            "latency_seconds": round(time.perf_counter() - started, 4),
+            "error": "command-not-executable",
+            "command": command,
+        }
+    except subprocess.TimeoutExpired as exc:
+        return {
+            "returncode": 124,
+            "stdout": exc.stdout or "",
+            "stderr": f"timed out after {timeout}s",
+            "latency_seconds": round(time.perf_counter() - started, 4),
+            "error": "timeout",
+            "command": command,
+        }
     elapsed = time.perf_counter() - started
     return {
         "returncode": proc.returncode,

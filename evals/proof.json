@@ -5,57 +5,134 @@
   "cases": [
     {
       "id": "doctor",
-      "command": ["python", "-m", "e2e", "doctor"],
+      "command": [
+        "${python}",
+        "-m",
+        "e2e",
+        "doctor"
+      ],
       "graders": [
-        {"type": "exit-code", "expected": 0},
-        {"type": "contains", "text": "capabilities"}
+        {
+          "type": "exit-code",
+          "expected": 0
+        },
+        {
+          "type": "contains",
+          "text": "capabilities"
+        }
       ],
       "repetitions": 2
     },
     {
       "id": "context-engine",
-      "command": ["python", "-m", "e2e", "context", "add authentication"],
+      "command": [
+        "${python}",
+        "-m",
+        "e2e",
+        "context",
+        "add authentication"
+      ],
       "graders": [
-        {"type": "exit-code", "expected": 0},
-        {"type": "contains", "text": "context"}
+        {
+          "type": "exit-code",
+          "expected": 0
+        },
+        {
+          "type": "contains",
+          "text": "context"
+        }
       ],
       "repetitions": 2
     },
     {
       "id": "engineering-intelligence",
-      "command": ["python", "-m", "e2e", "intelligence", "add authentication"],
+      "command": [
+        "${python}",
+        "-m",
+        "e2e",
+        "intelligence",
+        "add authentication"
+      ],
       "graders": [
-        {"type": "exit-code", "expected": 0},
-        {"type": "contains", "text": "risk"},
-        {"type": "contains", "text": "recommended_workers"}
+        {
+          "type": "exit-code",
+          "expected": 0
+        },
+        {
+          "type": "contains",
+          "text": "risk"
+        },
+        {
+          "type": "contains",
+          "text": "recommended_workers"
+        }
       ],
       "repetitions": 2
     },
     {
       "id": "sd2-orchestration",
-      "command": ["python", "-m", "e2e", "orchestrate", "add authentication"],
+      "command": [
+        "${python}",
+        "-m",
+        "e2e",
+        "orchestrate",
+        "add authentication"
+      ],
       "graders": [
-        {"type": "exit-code", "expected": 0},
-        {"type": "contains", "text": "workers"}
+        {
+          "type": "exit-code",
+          "expected": 0
+        },
+        {
+          "type": "contains",
+          "text": "workers"
+        }
       ],
       "repetitions": 2
     },
     {
       "id": "guardrails",
-      "command": ["python", "-m", "e2e", "guardrails", "check", "--stage", "verification"],
+      "command": [
+        "${python}",
+        "-m",
+        "e2e",
+        "guardrails",
+        "check",
+        "--stage",
+        "verification"
+      ],
       "graders": [
-        {"type": "exit-code", "expected": 0},
-        {"type": "contains", "text": "status"
+        {
+          "type": "exit-code",
+          "expected": 0
+        },
+        {
+          "type": "contains",
+          "text": "status"
         }
       ],
       "repetitions": 2
     },
     {
       "id": "runtime-parity",
-      "command": ["python", "-m", "e2e", "runtime", "parity", "--role", "sd1"],
+      "command": [
+        "${python}",
+        "-m",
+        "e2e",
+        "runtime",
+        "parity",
+        "--role",
+        "sd1"
+      ],
       "graders": [
-        {"type": "exit-code", "expected": 0},
-        {"type": "contains", "text": "status"}
+        {
+          "type": "exit-code",
+          "expected": 0
+        },
+        {
+          "type": "contains",
+          "text": "status"
+        }
       ],
       "repetitions": 2
     }

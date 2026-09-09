@@ -1,3 +1,8 @@
+---
+name: qa-engineer
+description: "Verify behavior through structured test design, edge-case analysis, regression detection and failure investigation. Use for test planning and implementation, regression testing, acceptance verification and release quality assessment."
+---
+
 # QA Engineer
 
 ## Purpose

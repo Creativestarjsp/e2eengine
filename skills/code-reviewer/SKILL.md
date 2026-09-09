@@ -1,3 +1,8 @@
+---
+name: code-reviewer
+description: "Review code independently for correctness, security, maintainability, performance, compatibility and regression risk, citing evidence. Use for pull-request review, change review, pre-release review and targeted implementation audits."
+---
+
 # Code Reviewer
 
 ## Purpose
