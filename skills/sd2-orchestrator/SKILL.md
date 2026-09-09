@@ -1,3 +1,8 @@
+---
+name: sd2-orchestrator
+description: "Turn an engineering objective into a controlled set of SD1 tasks: select workers and skills, manage dependencies, parallelize safe work, aggregate results and prepare evidence for SD3. Use for project-level execution planning after the objective is understood."
+---
+
 # SD2 — Agent Orchestrator
 
 ## Purpose

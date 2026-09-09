@@ -1,3 +1,8 @@
+---
+name: agent-evaluation
+description: "Judge SD1/SD2/SD3 work on evidence rather than effort or self-reported success. Use after a non-trivial worker run, when SD3 is deciding whether work is acceptable, when comparing runtime or model variants, or when investigating reliability regressions."
+---
+
 # Agent Evaluation
 
 ## Purpose

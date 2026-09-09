@@ -1,3 +1,8 @@
+---
+name: seo-audit
+description: "Audit a site's search visibility, technical health, content quality, structured data, performance and AI-search readiness from evidence on the actual site. Use to diagnose crawl or indexing problems, review technical and on-page SEO, or produce a prioritized SEO action plan."
+---
+
 # SEO Audit
 
 ## Purpose

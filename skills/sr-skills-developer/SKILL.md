@@ -1,3 +1,8 @@
+---
+name: sr-skills-developer
+description: "Design, implement, review and maintain AI-agent skills to the E2E Skill System standards. Use when creating a new skill, upgrading an existing one, reviewing skill quality, or maintaining the skill library."
+---
+
 # SR Skills Developer
 
 ## Purpose

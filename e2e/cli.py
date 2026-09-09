@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 from pathlib import Path
 
 from .adapters import capabilities, detect
@@ -17,10 +18,11 @@ from .intelligence import build_intelligence, synthesize_run
 from .introspection import diagnose
 from .memory import Memory
 from .orchestrator import plan, write_plan
+from .project import init as init_project
 from .release import release_check
 from .run_artifacts import persist_run
 from .runtime_contract import contract, parity
-from .skills import discover, match
+from .skills import diagnose as diagnose_skills, discover, match
 from .tool_gateway import serve, write_mcp_configs
 from .tools import check_registry, load_tools, policy_for_role
 from .verify import verify
@@ -32,16 +34,31 @@ def _root() -> Path:
     return Path.cwd()
 
 
+def _relative_to_root(root: Path, path: str) -> str:
+    """Normalise a path for guardrail rules, which match repo-relative paths."""
+    candidate = Path(path)
+    if not candidate.is_absolute():
+        return candidate.as_posix()
+    try:
+        return candidate.resolve().relative_to(root.resolve()).as_posix()
+    except ValueError:
+        # Outside the repository: keep it absolute so the rule still sees it.
+        return candidate.as_posix()
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="e2e", description="E2E engineering runtime")
     sub = p.add_subparsers(dest="cmd", required=True)
-    for name in ("init", "doctor", "status", "release"):
+    for name in ("doctor", "status", "release"):
         sub.add_parser(name)
+    ini = sub.add_parser("init")
+    ini.add_argument("--skills-path", dest="skills_paths", action="append", help="Directory holding <skill>/SKILL.md; repeatable")
+    ini.add_argument("--force", action="store_true", help="Overwrite an existing e2e.json")
     c = sub.add_parser("context"); c.add_argument("task")
     intel = sub.add_parser("intelligence"); intel.add_argument("task")
-    s = sub.add_parser("skill"); ss = s.add_subparsers(dest="skill_cmd", required=True); ss.add_parser("list"); si = ss.add_parser("inspect"); si.add_argument("name")
+    s = sub.add_parser("skill"); ss = s.add_subparsers(dest="skill_cmd", required=True); ss.add_parser("list"); ss.add_parser("diagnose"); si = ss.add_parser("inspect"); si.add_argument("name")
     t = sub.add_parser("tool"); ts = t.add_subparsers(dest="tool_cmd", required=True); ts.add_parser("list"); ts.add_parser("check"); ti = ts.add_parser("inspect"); ti.add_argument("name"); tp = ts.add_parser("policy"); tp.add_argument("role", choices=("sd1", "sd2", "sd3")); tg = ts.add_parser("gateway"); tg.add_argument("--role", choices=("sd1", "sd2", "sd3"), default="sd1"); tg.add_argument("--serve", action="store_true")
-    g = sub.add_parser("guardrails"); gs = g.add_subparsers(dest="guardrail_cmd", required=True); gs.add_parser("policy"); gc = gs.add_parser("check"); gc.add_argument("--stage", choices=("pre-edit", "pre-commit", "pre-merge", "verification"), default="verification"); gs.add_parser("write")
+    g = sub.add_parser("guardrails"); gs = g.add_subparsers(dest="guardrail_cmd", required=True); gs.add_parser("policy"); gc = gs.add_parser("check"); gc.add_argument("--stage", choices=("pre-edit", "pre-commit", "pre-merge", "verification"), default="verification"); gc.add_argument("--file", dest="files", action="append", help="Check these paths instead of the staged diff; repeatable"); gs.add_parser("write")
     m = sub.add_parser("memory"); ms = m.add_subparsers(dest="memory_cmd", required=True); ml = ms.add_parser("list"); ml.add_argument("--scope"); ml.add_argument("--include-expired", action="store_true"); mq = ms.add_parser("search"); mq.add_argument("query"); mq.add_argument("--scope"); mq.add_argument("--limit", type=int, default=20); ma = ms.add_parser("add"); ma.add_argument("kind"); ma.add_argument("scope"); ma.add_argument("summary"); ma.add_argument("--evidence", action="append", default=[]); ma.add_argument("--source", default="runtime"); ma.add_argument("--confidence", default="verified"); ma.add_argument("--expires-days", type=int); ma.add_argument("--supersedes")
     b = sub.add_parser("brain"); bs = b.add_subparsers(dest="brain_cmd", required=True); bs.add_parser("build"); bs.add_parser("check"); bm = bs.add_parser("map"); bm.add_argument("path", nargs="?", default=""); bx = bs.add_parser("search"); bx.add_argument("query"); bi = bs.add_parser("impact"); bi.add_argument("target")
     rt = sub.add_parser("runtime"); rts = rt.add_subparsers(dest="runtime_cmd", required=True); rti = rts.add_parser("inspect"); rti.add_argument("--runtime", choices=("claude-code", "codex")); rti.add_argument("--role", choices=("sd1", "sd2", "sd3"), default="sd1"); rtc = rts.add_parser("contract"); rtc.add_argument("--runtime", choices=("claude-code", "codex"), required=True); rtc.add_argument("--role", choices=("sd1", "sd2", "sd3"), default="sd1"); rtp = rts.add_parser("parity"); rtp.add_argument("--role", choices=("sd1", "sd2", "sd3"), default="sd1")
@@ -56,11 +73,13 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
     root = _root()
     if args.cmd == "init":
-        (root / ".e2e").mkdir(exist_ok=True); print(json.dumps({"status":"initialized","root":str(root)}, indent=2)); return 0
+        report = init_project(root, skills=args.skills_paths, force=args.force)
+        print(json.dumps(report, indent=2))
+        return 0
     if args.cmd == "doctor":
         print(json.dumps({"runtime": detect(root), "capabilities": capabilities(root), "tools": check_registry(root), "python": os.sys.version}, indent=2)); return 0
     if args.cmd == "status":
-        brain = CodeBrain(root); print(json.dumps({"runtime": detect(root), "brain": brain.check(), "skills": len(discover(root)), "tools": check_registry(root), "capabilities": capabilities(root), "memory": len(Memory(root).list())}, indent=2)); return 0
+        brain = CodeBrain(root); print(json.dumps({"runtime": detect(root), "brain": brain.check(), "skills": diagnose_skills(root), "tools": check_registry(root), "capabilities": capabilities(root), "memory": len(Memory(root).list())}, indent=2)); return 0
     if args.cmd == "context":
         brain = CodeBrain(root)
         if not brain.store.exists(): brain.build()
@@ -68,8 +87,16 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "intelligence":
         result = build_intelligence(root, args.task, plan(root, args.task)); print(json.dumps(result, indent=2)); return 0
     if args.cmd == "skill":
+        if args.skill_cmd == "diagnose":
+            print(json.dumps(diagnose_skills(root), indent=2)); return 0
         skills = discover(root)
-        if args.skill_cmd == "list": print(json.dumps(skills, indent=2)); return 0
+        if args.skill_cmd == "list":
+            print(json.dumps(skills, indent=2))
+            # An empty or degraded registry is nearly always a path problem;
+            # say so on stderr rather than letting `[]` look like a valid answer.
+            for warning in diagnose_skills(root)["warnings"]:
+                print(f"warning: {warning}", file=sys.stderr)
+            return 0
         found = next((s for s in skills if s["name"] == args.name), None); print(json.dumps(found or {"error":"skill-not-found"}, indent=2)); return 0 if found else 1
     if args.cmd == "tool":
         tools = load_tools(root)
@@ -85,7 +112,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "guardrails":
         if args.guardrail_cmd == "policy": print(json.dumps(guardrail_policy(), indent=2)); return 0
         if args.guardrail_cmd == "write": print(str(write_guardrail_policy(root))); return 0
-        result = check_guardrails(root, args.stage); print(json.dumps(result, indent=2)); return 0 if result["status"] == "pass" else 1
+        files = [_relative_to_root(root, f) for f in args.files] if args.files else None
+        result = check_guardrails(root, args.stage, files); print(json.dumps(result, indent=2)); return 0 if result["status"] == "pass" else 1
     if args.cmd == "memory":
         memory = Memory(root)
         if args.memory_cmd == "list": print(json.dumps(memory.list(args.scope, args.include_expired), indent=2)); return 0

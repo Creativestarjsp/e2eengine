@@ -1,3 +1,8 @@
+---
+name: seo-local
+description: "Evaluate local search visibility for businesses with physical locations or service areas: local landing pages, entity signals, NAP consistency, local structured data and reviews. Use for local-service, brick-and-mortar and multi-location SEO."
+---
+
 # Local SEO
 
 ## Purpose

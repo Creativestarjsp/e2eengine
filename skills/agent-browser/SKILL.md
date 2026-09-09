@@ -1,3 +1,8 @@
+---
+name: agent-browser
+description: "Drive a real browser for development, debugging, QA and end-to-end verification. Use when a task needs to navigate a site or local dev server, click/type/upload, verify a user journey, reproduce a UI bug, or confirm a change in the running application rather than in tests alone."
+---
+
 # Agent Browser
 
 ## Purpose

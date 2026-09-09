@@ -10,6 +10,34 @@ from typing import Any
 
 SCHEMA_VERSION = "2"
 SUPPORTED = {".py", ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".java", ".go", ".rs", ".php", ".rb", ".cs", ".kt", ".swift"}
+
+#: Filler words carry no retrieval signal but match almost every file path.
+_QUERY_STOPWORDS = frozenset("""
+add and are but for from has have how into its new not the that this those use
+using with you your all any can out per via when where which while who why
+""".split())
+
+_WORD = re.compile(r"[A-Za-z][A-Za-z0-9_]{1,}")
+_CAMEL = re.compile(r"[A-Z]+(?![a-z])|[A-Z][a-z0-9]*|[a-z0-9]+")
+
+
+def _query_terms(query: str) -> set[str]:
+    """Lowercase content words of a query, at least three characters."""
+    return {w.lower() for w in _WORD.findall(query) if len(w) >= 3} - _QUERY_STOPWORDS
+
+
+def _identifier_tokens(name: str) -> set[str]:
+    """Split an identifier into searchable parts.
+
+    ``ActivityCard`` -> {activitycard, activity, card}
+    ``use_lookin``   -> {use_lookin, use, lookin}
+    """
+    tokens = {name.lower()}
+    for part in name.replace("-", "_").split("_"):
+        for piece in _CAMEL.findall(part):
+            if len(piece) >= 2:
+                tokens.add(piece.lower())
+    return tokens
 IGNORED = {".git", "node_modules", "vendor", "dist", "build", ".next", ".nuxt", "coverage", ".e2e"}
 
 
@@ -62,11 +90,14 @@ class CodeBrain:
         for pattern, kind in patterns:
             for m in re.finditer(pattern, text):
                 name = m.group(1)
-                key = (name, m.start())
+                line = text.count("\n", 0, m.start()) + 1
+                # Several patterns match the same declaration at different
+                # offsets ("export function x(" matches at both "export" and
+                # "function"), so identity is name + line, not match offset.
+                key = (name, line)
                 if key in seen:
                     continue
                 seen.add(key)
-                line = text.count("\n", 0, m.start()) + 1
                 symbols.append({"name": name, "kind": kind, "file": rel, "line": line, "id": f"{rel}:{name}:{line}", "parser": "regex"})
         for m in re.finditer(r"(?:from\s+['\"]([^'\"]+)['\"]|import\s+['\"]([^'\"]+)['\"]|import\s+([\w.]+))", text):
             target = next(x for x in m.groups() if x)
@@ -131,9 +162,46 @@ class CodeBrain:
         changed = sorted(set(current) ^ set(indexed) | {p for p in current if p in indexed and current[p] != indexed[p]})
         return {"fresh": not changed and self.data.get("revision") == _revision(self.root), "changed": changed, "indexed_files": len(indexed), "provider": self.data.get("provider")}
 
-    def search(self, query: str) -> list[dict]:
-        q = query.lower()
-        return [s for s in self.data.get("symbols", []) if q in s["name"].lower() or q in s["file"].lower()][:100]
+    def search(self, query: str, limit: int = 100) -> list[dict]:
+        """Rank indexed symbols against a query.
+
+        Callers pass whole task descriptions ("add the activity card to the
+        discovery screen"), so the query is tokenised and scored per term.
+        Matching the entire query as one substring — the previous behaviour —
+        finds nothing for anything longer than a single identifier.
+
+        Symbol names are split on camelCase and snake_case boundaries so
+        ``ActivityCard`` is reachable from "activity" or "card".
+        """
+        q = query.lower().strip()
+        terms = _query_terms(query)
+        if not terms and not q:
+            return []
+
+        scored: list[tuple[int, dict]] = []
+        for symbol in self.data.get("symbols", []):
+            name = symbol.get("name", "")
+            lowered = name.lower()
+            path = symbol.get("file", "").lower()
+            name_tokens = _identifier_tokens(name)
+            path_tokens = set(re.findall(r"[a-z0-9]+", path))
+
+            score = 0
+            # Preserves the old single-identifier behaviour as the strongest signal.
+            if q and (q in lowered or q in path):
+                score += 5
+            for term in terms:
+                if term in name_tokens:
+                    score += 3
+                elif term in lowered:
+                    score += 2
+                if term in path_tokens:
+                    score += 1
+            if score:
+                scored.append((score, symbol))
+
+        scored.sort(key=lambda pair: (-pair[0], pair[1].get("file", ""), pair[1].get("line", 0)))
+        return [dict(symbol, score=score) for score, symbol in scored[:limit]]
 
     def find_symbol(self, name: str) -> list[dict]:
         return [s for s in self.data.get("symbols", []) if s["name"] == name]

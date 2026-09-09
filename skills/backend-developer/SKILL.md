@@ -1,3 +1,8 @@
+---
+name: backend-developer
+description: "Implement backend services, business logic, validation, authentication, authorization, persistence and failure handling. Use for server-side implementation, service boundaries and backend tests. Not for database architecture, infrastructure or frontend work."
+---
+
 # Backend Developer
 
 ## Purpose

@@ -5,18 +5,40 @@
   "cases": [
     {
       "id": "cli-help",
-      "command": ["python", "-m", "e2e", "--help"],
+      "command": [
+        "${python}",
+        "-m",
+        "e2e",
+        "--help"
+      ],
       "graders": [
-        {"type": "exit-code", "expected": 0},
-        {"type": "contains", "text": "E2E engineering runtime"}
+        {
+          "type": "exit-code",
+          "expected": 0
+        },
+        {
+          "type": "contains",
+          "text": "E2E engineering runtime"
+        }
       ]
     },
     {
       "id": "status-command",
-      "command": ["python", "-m", "e2e", "status"],
+      "command": [
+        "${python}",
+        "-m",
+        "e2e",
+        "status"
+      ],
       "graders": [
-        {"type": "exit-code", "expected": 0},
-        {"type": "contains", "text": "brain"}
+        {
+          "type": "exit-code",
+          "expected": 0
+        },
+        {
+          "type": "contains",
+          "text": "brain"
+        }
       ]
     }
   ]

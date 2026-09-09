@@ -1,3 +1,8 @@
+---
+name: mongoose-developer
+description: "Implement MongoDB persistence with Mongoose while keeping database-specific behavior isolated and testable. Use for Mongoose schemas and models, validation, indexes, middleware, populate, discriminators, query design and transactions."
+---
+
 # Mongoose Developer
 
 ## Purpose

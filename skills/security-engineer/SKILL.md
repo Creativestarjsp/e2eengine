@@ -1,3 +1,8 @@
+---
+name: security-engineer
+description: "Identify and reduce security risk across architecture, code, APIs, data flows, dependencies and deployment. Use for security review, threat modeling, vulnerability analysis, authentication and authorization review, secrets handling and abuse cases."
+---
+
 # Security Engineer
 
 ## Purpose

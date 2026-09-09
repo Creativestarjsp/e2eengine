@@ -1,3 +1,8 @@
+---
+name: frontend-developer
+description: "Build accessible, responsive, maintainable frontend experiences that fit the existing architecture and design language. Use for component work, client-side state, responsive behavior, accessibility and frontend tests. Not for backend APIs, database design or infrastructure."
+---
+
 # Frontend Developer
 
 ## Purpose

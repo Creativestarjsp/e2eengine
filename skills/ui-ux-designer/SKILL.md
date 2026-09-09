@@ -1,3 +1,8 @@
+---
+name: ui-ux-designer
+description: "Design usable, accessible product experiences with an intentional visual and interaction system. Use for UX flows, information architecture, interaction design, visual direction, screen design, design systems and accessibility guidance. Not a substitute for frontend implementation."
+---
+
 # UI/UX Designer
 
 ## Purpose

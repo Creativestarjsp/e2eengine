@@ -1,3 +1,8 @@
+---
+name: software-architect
+description: "Design simple, scalable, secure, maintainable architectures that satisfy requirements within existing system constraints. Use for system architecture, major feature decomposition, technology evaluation, integration design and trade-off analysis."
+---
+
 # Software Architect
 
 ## Purpose

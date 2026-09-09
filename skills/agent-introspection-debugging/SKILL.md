@@ -1,3 +1,8 @@
+---
+name: agent-introspection-debugging
+description: "Diagnose failed or looping agent runs before retrying, separating model, context, tool, environment and repository causes. Use when a worker times out or repeatedly fails, the same correction is attempted twice, tool calls loop without progress, or context drift is suspected."
+---
+
 # Agent Introspection Debugging
 
 ## Purpose

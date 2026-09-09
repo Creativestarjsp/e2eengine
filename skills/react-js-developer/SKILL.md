@@ -1,3 +1,8 @@
+---
+name: react-js-developer
+description: "Build, refactor and review production React web applications. Use for React components, hooks, state, context and composition, React web architecture, routing and data loading, forms, and React performance work. Not for React Native or Expo apps."
+---
+
 # React JS Developer
 
 ## Purpose

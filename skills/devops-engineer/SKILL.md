@@ -1,3 +1,8 @@
+---
+name: devops-engineer
+description: "Build reproducible build, test, deployment, environment, monitoring and operational workflows. Use for CI/CD pipelines, deployment, environment configuration, infrastructure integration, observability and release automation."
+---
+
 # DevOps Engineer
 
 ## Purpose

@@ -1,3 +1,8 @@
+---
+name: database-abstraction
+description: "Design a stable data-access boundary so persistence technology can change without leaking storage details into application code. Use for repository architecture, database portability, swapping engines or ORMs, testing persistence in isolation, or adding a database adapter."
+---
+
 # Database Abstraction
 
 ## Purpose

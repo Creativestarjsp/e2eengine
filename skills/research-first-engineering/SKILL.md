@@ -1,3 +1,8 @@
+---
+name: research-first-engineering
+description: "Establish what already exists before writing new code, so the repository's own patterns and dependencies get reused. Use when starting a feature that may already have a pattern, adding a dependency or abstraction, replacing existing code, or making an architectural decision."
+---
+
 # Research-First Engineering
 
 ## Purpose

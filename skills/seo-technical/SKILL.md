@@ -1,3 +1,8 @@
+---
+name: seo-technical
+description: "Diagnose technical search problems across crawlability, indexability, security, URLs, mobile experience, performance, JavaScript rendering and structured data. Use for robots.txt and sitemap issues, canonical and noindex problems, Core Web Vitals, and SSR/CSR rendering issues."
+---
+
 # Technical SEO
 
 ## Purpose

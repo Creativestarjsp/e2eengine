@@ -1,3 +1,8 @@
+---
+name: expo-developer
+description: "Build, debug and ship React Native apps on Expo. Use for Expo SDK APIs and modules, Expo Router, app config, development builds, EAS Build, permissions and device capabilities, and OTA update strategy. Not for bare React Native CLI projects."
+---
+
 # Expo Developer
 
 ## Purpose
