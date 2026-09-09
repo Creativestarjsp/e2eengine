@@ -259,6 +259,28 @@ e2e status
 e2e skill diagnose   # what the registry found, and why it found nothing
 ```
 
+### Enforce guardrails automatically
+
+`runtime/hooks.yaml` describes the guardrail stages, but nothing invokes them
+on its own — `e2e guardrails check` only runs when something calls it. To make
+a stage actually block, wire it to your runtime's hook system. For Claude Code,
+`.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Edit|Write|MultiEdit",
+      "hooks": [{ "type": "command", "command": "./bin/e2e-guardrails.sh pre-edit" }]
+    }]
+  }
+}
+```
+
+`guardrails check --stage pre-edit --file <path>` checks a single path, which is
+what a pre-edit hook needs: the write has not happened, so there is no staged
+diff to read. It exits non-zero when a rule blocks.
+
 ### Build repository intelligence
 
 ```bash

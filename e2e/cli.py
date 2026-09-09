@@ -34,6 +34,18 @@ def _root() -> Path:
     return Path.cwd()
 
 
+def _relative_to_root(root: Path, path: str) -> str:
+    """Normalise a path for guardrail rules, which match repo-relative paths."""
+    candidate = Path(path)
+    if not candidate.is_absolute():
+        return candidate.as_posix()
+    try:
+        return candidate.resolve().relative_to(root.resolve()).as_posix()
+    except ValueError:
+        # Outside the repository: keep it absolute so the rule still sees it.
+        return candidate.as_posix()
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="e2e", description="E2E engineering runtime")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -46,7 +58,7 @@ def main(argv: list[str] | None = None) -> int:
     intel = sub.add_parser("intelligence"); intel.add_argument("task")
     s = sub.add_parser("skill"); ss = s.add_subparsers(dest="skill_cmd", required=True); ss.add_parser("list"); ss.add_parser("diagnose"); si = ss.add_parser("inspect"); si.add_argument("name")
     t = sub.add_parser("tool"); ts = t.add_subparsers(dest="tool_cmd", required=True); ts.add_parser("list"); ts.add_parser("check"); ti = ts.add_parser("inspect"); ti.add_argument("name"); tp = ts.add_parser("policy"); tp.add_argument("role", choices=("sd1", "sd2", "sd3")); tg = ts.add_parser("gateway"); tg.add_argument("--role", choices=("sd1", "sd2", "sd3"), default="sd1"); tg.add_argument("--serve", action="store_true")
-    g = sub.add_parser("guardrails"); gs = g.add_subparsers(dest="guardrail_cmd", required=True); gs.add_parser("policy"); gc = gs.add_parser("check"); gc.add_argument("--stage", choices=("pre-edit", "pre-commit", "pre-merge", "verification"), default="verification"); gs.add_parser("write")
+    g = sub.add_parser("guardrails"); gs = g.add_subparsers(dest="guardrail_cmd", required=True); gs.add_parser("policy"); gc = gs.add_parser("check"); gc.add_argument("--stage", choices=("pre-edit", "pre-commit", "pre-merge", "verification"), default="verification"); gc.add_argument("--file", dest="files", action="append", help="Check these paths instead of the staged diff; repeatable"); gs.add_parser("write")
     m = sub.add_parser("memory"); ms = m.add_subparsers(dest="memory_cmd", required=True); ml = ms.add_parser("list"); ml.add_argument("--scope"); ml.add_argument("--include-expired", action="store_true"); mq = ms.add_parser("search"); mq.add_argument("query"); mq.add_argument("--scope"); mq.add_argument("--limit", type=int, default=20); ma = ms.add_parser("add"); ma.add_argument("kind"); ma.add_argument("scope"); ma.add_argument("summary"); ma.add_argument("--evidence", action="append", default=[]); ma.add_argument("--source", default="runtime"); ma.add_argument("--confidence", default="verified"); ma.add_argument("--expires-days", type=int); ma.add_argument("--supersedes")
     b = sub.add_parser("brain"); bs = b.add_subparsers(dest="brain_cmd", required=True); bs.add_parser("build"); bs.add_parser("check"); bm = bs.add_parser("map"); bm.add_argument("path", nargs="?", default=""); bx = bs.add_parser("search"); bx.add_argument("query"); bi = bs.add_parser("impact"); bi.add_argument("target")
     rt = sub.add_parser("runtime"); rts = rt.add_subparsers(dest="runtime_cmd", required=True); rti = rts.add_parser("inspect"); rti.add_argument("--runtime", choices=("claude-code", "codex")); rti.add_argument("--role", choices=("sd1", "sd2", "sd3"), default="sd1"); rtc = rts.add_parser("contract"); rtc.add_argument("--runtime", choices=("claude-code", "codex"), required=True); rtc.add_argument("--role", choices=("sd1", "sd2", "sd3"), default="sd1"); rtp = rts.add_parser("parity"); rtp.add_argument("--role", choices=("sd1", "sd2", "sd3"), default="sd1")
@@ -100,7 +112,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "guardrails":
         if args.guardrail_cmd == "policy": print(json.dumps(guardrail_policy(), indent=2)); return 0
         if args.guardrail_cmd == "write": print(str(write_guardrail_policy(root))); return 0
-        result = check_guardrails(root, args.stage); print(json.dumps(result, indent=2)); return 0 if result["status"] == "pass" else 1
+        files = [_relative_to_root(root, f) for f in args.files] if args.files else None
+        result = check_guardrails(root, args.stage, files); print(json.dumps(result, indent=2)); return 0 if result["status"] == "pass" else 1
     if args.cmd == "memory":
         memory = Memory(root)
         if args.memory_cmd == "list": print(json.dumps(memory.list(args.scope, args.include_expired), indent=2)); return 0
