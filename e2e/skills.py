@@ -30,6 +30,11 @@ _TERM = re.compile(r"[A-Za-z][A-Za-z0-9_-]{2,}")
 #: Weight of a task term that only matches a skill's soft boundary text.
 EXCLUSION_PENALTY = 2
 
+#: Minimum share of the best score a skill must reach to be returned.
+#: SD2 turns the top matches into workers, so a skill that scored 2 against a
+#: leader on 13 should not become an assignment.
+RELEVANCE_FLOOR = 0.4
+
 #: Skill documents draw two different kinds of line, and they mean different
 #: things for routing:
 #:
@@ -197,13 +202,41 @@ def _terms(task: str) -> set[str]:
     return {w.lower() for w in _TERM.findall(task)} - _STOPWORDS
 
 
+def _term_weights(terms: set[str], skills: list[dict[str, Any]]) -> dict[str, int]:
+    """Weight each task term by how few skills claim it.
+
+    A term every skill mentions carries no routing signal, so it is scored at
+    zero rather than adding a point to everyone.
+    """
+    total = len(skills)
+    weights: dict[str, int] = {}
+    for term in terms:
+        frequency = sum(1 for s in skills if term in s["_positive"])
+        if frequency == 0:
+            weights[term] = 0
+        elif total >= 6 and frequency > total / 2:
+            weights[term] = 0
+        elif frequency <= 2:
+            weights[term] = 3
+        elif frequency <= 5:
+            weights[term] = 2
+        else:
+            weights[term] = 1
+    return weights
+
+
 def match(root: str | Path, task: str, limit: int = 8) -> list[dict[str, Any]]:
     """Rank skills for a task, respecting each skill's stated exclusions.
 
     Scoring:
 
-    * ``+1`` per task term found in the skill's name, description, purpose or
-      triggers, and ``+5`` when the task names the skill outright.
+    * Each task term is weighted by how many skills claim it. "expo" names one
+      skill and is decisive; "data" appears in half the library and decides
+      nothing. Without this, a long task description scores every skill on its
+      filler vocabulary and unrelated specialists surface in the plan.
+    * ``+weight`` per task term found in the skill's name, description, purpose
+      or triggers, and ``+5`` when the task names the skill outright.
+    * Results below :data:`RELEVANCE_FLOOR` of the best score are dropped.
     * ``-2`` per task term that only appears in the skill's soft boundary text.
     * A skill is dropped when a task term appears in its *disqualifying* prose
       and nowhere in its positive text. A document that says "not for Expo-only
@@ -219,22 +252,32 @@ def match(root: str | Path, task: str, limit: int = 8) -> list[dict[str, Any]]:
     terms = _terms(task)
     lowered = task.lower()
 
+    weights = _term_weights(terms, skills)
+
     scored: list[tuple[int, dict[str, Any]]] = []
     for skill in skills:
         positive = skill["_positive"]
         disqualifying = skill["disqualifying"].lower()
         boundary = skill["exclusions"].lower()
 
-        hits = {t for t in terms if t in positive}
         if any(t in disqualifying and t not in positive for t in terms):
             continue
+        hits = {t for t in terms if t in positive}
         excluded_only = {t for t in terms if t in boundary and t not in positive}
 
-        score = len(hits) - (EXCLUSION_PENALTY * len(excluded_only))
+        score = sum(weights[t] for t in hits) - (EXCLUSION_PENALTY * len(excluded_only))
         if skill["name"].replace("-", " ") in lowered:
             score += 5
         if score > 0:
             scored.append((score, skill))
 
-    ranked = [s for _, s in sorted(scored, key=lambda x: (-x[0], x[1]["name"]))][:limit]
+    if not scored:
+        return []
+    best = max(score for score, _ in scored)
+    floor = best * RELEVANCE_FLOOR
+    ranked = [
+        skill
+        for score, skill in sorted(scored, key=lambda x: (-x[0], x[1]["name"]))
+        if score >= floor
+    ][:limit]
     return [{k: v for k, v in s.items() if not k.startswith("_")} for s in ranked]

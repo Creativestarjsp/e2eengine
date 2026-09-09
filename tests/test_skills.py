@@ -145,3 +145,29 @@ def test_diagnose_flags_missing_frontmatter(tmp_path: Path):
     report = diagnose(tmp_path)
     assert report["count"] == 1
     assert any("frontmatter" in w for w in report["warnings"])
+
+
+def test_weak_matches_are_dropped_below_the_relevance_floor(tmp_path: Path):
+    """SD2 turns matches into workers, so a marginal match must not qualify."""
+    write_skill(tmp_path, "expo-developer", EXPO)
+    write_skill(tmp_path, "designer", DESIGNER)
+    write_skill(tmp_path, "frontend-developer", FRONTEND)
+
+    names = [s["name"] for s in match(tmp_path, "Expo Router screens and Expo SDK APIs")]
+
+    assert names == ["expo-developer"]
+
+
+def test_common_terms_do_not_decide_routing(tmp_path: Path):
+    """A word every skill uses carries no signal and must not score."""
+    for name in ("alpha-developer", "beta-developer", "gamma-developer"):
+        write_skill(
+            tmp_path,
+            name,
+            f"# {name}\n\n## Purpose\nBuild software applications.\n\n## Use When\nUse for build work.\n",
+        )
+    write_skill(tmp_path, "expo-developer", EXPO)
+
+    names = [s["name"] for s in match(tmp_path, "build an Expo application")]
+
+    assert names[0] == "expo-developer"
