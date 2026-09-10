@@ -75,6 +75,15 @@
       "approval": "none"
     },
     {
+      "name": "web.crawl",
+      "description": "Crawl approved public web pages and return Markdown or structured extraction through the E2E Web Intelligence adapter.",
+      "transport": "native",
+      "risk": "network",
+      "scopes": ["web.crawl", "network.read"],
+      "roles": ["sd1", "sd2", "sd3"],
+      "approval": "none"
+    },
+    {
       "name": "db.read",
       "description": "Read database metadata or records within an approved environment.",
       "transport": "mcp",
