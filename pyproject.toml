@@ -15,6 +15,9 @@ codebrain = [
   "tree-sitter-javascript>=0.25,<0.26",
   "tree-sitter-typescript>=0.23,<0.24",
 ]
+web = [
+  "crawl4ai==0.9.3",
+]
 
 [project.scripts]
 e2e = "e2e.cli:main"
