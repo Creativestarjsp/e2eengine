@@ -205,6 +205,10 @@ Never place secrets intended for server-side use into client-side code.
 
 Produce the requested React implementation plus a concise implementation/verification summary.
 
+## UX Principles
+
+When creating or changing a screen, apply the relevant laws in `skills/ux-laws/references/ux-laws.md` and the rules in `skills/ux-laws/references/platform-and-accessibility.md`. Apply them in the work itself; do not narrate them. For a scored review of an existing interface, use the `ux-laws` skill.
+
 ## Lifecycle Artifacts
 
 When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
