@@ -45,7 +45,7 @@ Ask when it cannot be inferred: who is on call and how they are reached, and wha
 - Health endpoints implemented and listed
 - Logging, error tracking, and uptime checks configured per component
 - Alert rules, each with an owner and a first action
-- `RUNBOOK.md` (from `templates/RUNBOOK.md`)
+- `RUNBOOK.md` (start with `e2e template copy RUNBOOK`)
 - A report: what is now visible, what is not, and evidence that one alert was tested
 
 ## Workflow

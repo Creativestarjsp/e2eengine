@@ -130,7 +130,7 @@ When creating or changing a screen, apply the relevant laws in `skills/ux-laws/r
 When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
 
 - Read first, when present: `PRD.md`, `stories/`.
-- Write `DESIGN.md` at the project root, starting from `templates/DESIGN.md`.
+- Write `DESIGN.md` at the project root, starting from the template: `e2e template copy DESIGN`.
 
 ## Definition of Done
 The design solves the intended user problem, has a coherent and product-specific visual/interaction direction, covers important states, meets accessibility and responsive expectations, and gives implementation enough information to build consistently.

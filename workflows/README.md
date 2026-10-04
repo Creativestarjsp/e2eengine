@@ -56,5 +56,5 @@ The `preview` and `release` phases use `app-deployment`, which supports Vercel, 
 
 Copy a blueprint and swap skills: `react-native-cli-developer` for
 `expo-developer`, `frontend-developer` for `react-js-developer`. Project
-blueprints in `.e2e/workflows/` or a path in `E2E_BLUEPRINTS_PATH` are found
-too. Run `e2e blueprint check` after any edit.
+blueprints in `.e2e/workflows/`, a `blueprints_paths` entry in `e2e.json`, or a
+path in `E2E_BLUEPRINTS_PATH` are found too. Run `e2e blueprint check` after any edit.

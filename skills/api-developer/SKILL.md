@@ -107,7 +107,7 @@ Return:
 When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
 
 - Read first, when present: `ARCHITECTURE.md`, `DATA-MODEL.md`.
-- Write `API-CONTRACT.md` at the project root, starting from `templates/API-CONTRACT.md`.
+- Write `API-CONTRACT.md` at the project root, starting from the template: `e2e template copy API-CONTRACT`.
 
 ## Definition of Done
 The endpoint is implemented, secured, validated, tested across important paths, documented, and compatible with the intended consumers.

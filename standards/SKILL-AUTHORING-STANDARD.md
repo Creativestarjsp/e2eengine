@@ -33,6 +33,36 @@ Every `SKILL.md` must define:
 - scope
 - expected outcomes
 
+## Frontmatter and Registry Integration
+
+Every `SKILL.md` starts with frontmatter. The registry reads it line by line, so each key stays on one line:
+
+```yaml
+---
+name: skill-name            # kebab-case, identical to the directory name
+description: "What the skill does and when to use it."
+version: 1.0.0
+level: L2
+consumes: ARCHITECTURE.md, DATA-MODEL.md   # optional
+produces: API-CONTRACT.md                  # optional
+---
+```
+
+`name` and `description` are required. A skill without frontmatter does not load in runtimes that require it; `e2e skill diagnose` reports those.
+
+### Artifact contract
+
+Declare `consumes` and `produces` only when the skill takes part in a product lifecycle (`architecture/BLUEPRINTS-AND-STORIES.md`). Names are paths from the project root; a trailing `/` means a directory. Every produced document needs a template the project can copy (`e2e template list`), and a blueprint that uses the skill must still pass `e2e blueprint check`.
+
+### Routing vocabulary
+
+The registry selects skills by matching the words of a task against four places: the directory name, the `description`, the Purpose section, and the Use When / When to Use section. Words that few skills use carry the most weight. Therefore:
+
+- Write those four places in the vocabulary of the skill's own domain. A generic word there ("fix", "slow", "build", "create", "test") will pull the skill into unrelated tasks.
+- Do not name other skills in those places; their names count as this skill's vocabulary.
+- State boundaries in When Not to Use as `Not a substitute for <skill> when …`. A plain "Do not use for X" removes the skill from every task that mentions X.
+- After adding or rewording a skill, compare routing before and after for a set of related and unrelated tasks (`e2e context "<task>"` prints the matched skills). Unrelated tasks must not change.
+
 ## Scope and Boundaries
 
 Every skill must explicitly define **Do** and **Do Not** responsibilities. Avoid accidental overlap unless skill composition is intentional and documented.
@@ -170,6 +200,9 @@ A skill is ready only when all applicable items pass:
 
 - [ ] purpose is clear
 - [ ] triggers are clear
+- [ ] frontmatter is complete and each key is on one line
+- [ ] routing was compared before and after; unrelated tasks are unchanged
+- [ ] artifact contract is declared when the skill takes part in a lifecycle
 - [ ] scope is explicit
 - [ ] inputs are defined
 - [ ] outputs are defined

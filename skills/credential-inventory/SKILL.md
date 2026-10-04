@@ -77,7 +77,7 @@ Storage entries name a location, never a value. Public identifiers (a publishabl
 INSPECT → RECONCILE → RECORD → CHECK → REPORT
 ```
 
-1. **Inspect.** Run `python skills/credential-inventory/scripts/credentials_check.py --root <project> --code-scan --json`. It lists variables found in code and env templates, variables already registered, and the difference. If `CREDENTIALS.md` is missing, copy `templates/CREDENTIALS.md` to the project root first.
+1. **Inspect.** Run `python skills/credential-inventory/scripts/credentials_check.py --root <project> --code-scan --json`. It lists variables found in code and env templates, variables already registered, and the difference. If `CREDENTIALS.md` is missing, create it first: `e2e template copy CREDENTIALS`, or copy this skill's `templates/CREDENTIALS.md` to the project root.
 2. **Reconcile.** For each variable in code but not in the register: find the reference, read enough surrounding code to state its purpose and service, and add a row. For each registered variable no longer in code: confirm with a repository search, then set `Status` to `retired` (keep the row for one release so the removal is visible) or delete it if the user prefers.
 3. **Record.** Fill every column. Where owner, storage, or rotation cannot be determined from the repository, write `unknown` and list the variable in the report as needing input; do not invent a team or path.
 4. **Check.** Run the checker again without `--json`. It must exit 0. It fails on: a secret-like value anywhere in the file, a malformed table, a missing required column, an empty `Variable`/`Service`/`Purpose`/`Storage` cell, or a variable name that is not `UPPER_SNAKE_CASE`. With `--strict` it also fails on drift (undocumented or unused variables).

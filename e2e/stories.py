@@ -204,6 +204,33 @@ def check(root: str | Path = ".", directory: str = STORIES_DIR) -> dict[str, Any
     }
 
 
+def new(root: str | Path, title: str, directory: str = STORIES_DIR) -> dict[str, Any]:
+    """Create the next-numbered story from the STORY template.
+
+    Numbering is the one part of story writing that must be exact, so it is
+    done here: ids are never reused, even when a story file was deleted from
+    the middle of the sequence.
+    """
+    from .templates import find  # local: templates needs nothing from stories
+
+    root = Path(root).resolve()
+    title = " ".join(title.split())
+    if not title:
+        raise ValueError("a story needs a title")
+    number = max((_number(s["id"]) for s in load(root, directory) if s["id"]), default=0) + 1
+    story_id = f"STORY-{number:03d}"
+    slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:50].strip("-") or "story"
+    lines = Path(find(root, "STORY")["path"]).read_text(encoding="utf-8").splitlines()
+    index = next((i for i, line in enumerate(lines) if _TITLE.match(line)), None)
+    if index is None:
+        raise ValueError("STORY template has no `# STORY-<n>: <title>` heading")
+    lines[index] = f"# {story_id}: {title}"
+    path = root / directory / f"{story_id}-{slug}.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return {"id": story_id, "title": title, "path": path.relative_to(root).as_posix()}
+
+
 def brief(story: dict[str, Any]) -> str:
     """The story as an agent reads it: what to build and what proves it."""
     lines = [f"STORY {story['id']}: {story['title']}"]

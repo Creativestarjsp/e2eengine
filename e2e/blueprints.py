@@ -12,38 +12,14 @@ Blueprints are JSON so the engine needs no YAML dependency.
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 from typing import Any
 
 from . import stories as story_registry
-from .project import load_config
+from .project import BLUEPRINTS_PATH_ENV, blueprint_paths  # noqa: F401 - re-exported for callers
 from .skills import discover
 
-#: Searched in order when a project has no explicit configuration.
-DEFAULT_BLUEPRINT_PATHS = ("workflows", ".e2e/workflows")
-
-#: Colon-separated paths, highest precedence. Mirrors E2E_SKILLS_PATH.
-BLUEPRINTS_PATH_ENV = "E2E_BLUEPRINTS_PATH"
-
 VALID_APPROVALS = (None, "owner")
-
-
-def blueprint_paths(root: str | Path = ".") -> list[Path]:
-    root = Path(root).resolve()
-    env = os.environ.get(BLUEPRINTS_PATH_ENV, "").strip()
-    if env:
-        raw = [p for p in env.split(os.pathsep) if p]
-    else:
-        configured = load_config(root).get("blueprints_paths")
-        raw = [str(p) for p in configured] if isinstance(configured, list) and configured else list(DEFAULT_BLUEPRINT_PATHS)
-    resolved: list[Path] = []
-    for entry in raw:
-        candidate = Path(entry)
-        candidate = candidate if candidate.is_absolute() else root / candidate
-        if candidate not in resolved:
-            resolved.append(candidate)
-    return resolved
 
 
 def _skill_name(entry: Any) -> str:

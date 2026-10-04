@@ -246,6 +246,8 @@ e2e init                              # writes e2e.json and .e2e/
 e2e init --skills-path shared/skills  # when skills live somewhere else
 ```
 
+Blueprints (`workflows/`) and templates (`templates/`) beside the skills path are recorded automatically; use `--blueprints-path` and `--templates-path` to point elsewhere.
+
 `init` records where this project keeps its skills. Discovery searches
 `skills/` and `.e2e/skills/` by default; override with `skills_paths` in
 `e2e.json`, or with the `E2E_SKILLS_PATH` environment variable (`PATH`
@@ -309,6 +311,8 @@ Execution is dry-run by default. Use `--execute` only when an external runtime i
 Blueprints sequence a whole product (stories → architecture → contracts → build → harden → preview → release); stories carry the acceptance criteria SD3 verifies.
 
 ```bash
+e2e template copy PRD                 # start from a template
+e2e story new "Sign in with email"    # next story from the STORY template
 e2e blueprint status full-stack-app
 e2e orchestrate "build the app" --blueprint full-stack-app
 e2e story next

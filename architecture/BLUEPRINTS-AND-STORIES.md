@@ -93,10 +93,29 @@ Four skills run the last two phases. Each checks its own preconditions with a sc
 
 In `preview`, the app is deployed first; the pipeline and the mobile build wait for it because they consume `DEPLOYMENT.md`. In `release`, production is promoted first, then monitoring is verified and the mobile app submitted. `deploy_preflight.py --env production` fails unless `DEPLOYMENT.md` has real targets, smoke test, rollback, and evidence, and `RELEASE-CHECKLIST.md` names the release owner and approval date.
 
+## Using the System in Another Project
+
+Skills, blueprints, and templates live together in this repository. A project adopts them with one command:
+
+```sh
+e2e init --skills-path <path-to-this-repo>/skills
+```
+
+`init` records the skills path and, when `workflows/` and `templates/` sit beside it, records those too (`blueprints_paths`, `templates_paths` in `e2e.json`). Override with `--blueprints-path` / `--templates-path`, or with `E2E_BLUEPRINTS_PATH` / `E2E_TEMPLATES_PATH`. The project's own `workflows/`, `.e2e/workflows/`, `templates/`, and `.e2e/templates/` are searched first, so a project can override a shared blueprint or template by name.
+
+Lifecycle documents start from templates the project can always reach:
+
+```sh
+e2e template list
+e2e template copy PRD            # never overwrites; never writes outside the project
+e2e story new "Sign in with email"   # next number, file name, and heading from the STORY template
+```
+
 ## Commands
 
 ```sh
-e2e story list | check | next
+e2e story list | check | next | new "<title>"
+e2e template list | copy <name> [destination]
 e2e blueprint list | check | status <name>
 e2e orchestrate "<task>" --blueprint <name> [--story STORY-<n>]
 e2e execute     "<task>" --blueprint <name> [--story STORY-<n>]

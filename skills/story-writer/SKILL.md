@@ -23,7 +23,7 @@ Turn product requirements into small, independently verifiable user stories. Eac
 
 ## When Not to Use
 
-- Not a substitute for a PRD: if goals, users, and scope are unknown, write `PRD.md` from `templates/PRD.md` first.
+- Not a substitute for a PRD: if goals, users, and scope are unknown, write `PRD.md` first (`e2e template copy PRD`).
 - Not a substitute for `software-architect`, `api-developer`, or `ui-ux-designer`: a story says what the user can do, never which tables, endpoints, or components deliver it.
 - Not a substitute for `qa-engineer`: this skill defines what must be proven; QA designs and runs the tests that prove it.
 
@@ -41,7 +41,7 @@ Ask only when it cannot be inferred: who the user is, or what outcome they need.
 
 ## Outputs
 
-- One file per story: `stories/STORY-<nnn>-<slug>.md`, in the format of `templates/STORY.md`
+- One file per story: `stories/STORY-<nnn>-<slug>.md`, created with `e2e story new "<title>"` from the STORY template
 - `e2e story check` passing
 - A short report: stories written, their dependency order, and any assumptions made
 
@@ -75,7 +75,7 @@ The engine parses these lines exactly: the `# STORY-<n>: <title>` heading, `Stat
 READ → SLICE → WRITE → ORDER → CHECK → REPORT
 ```
 
-1. **Read.** Read the PRD and any existing stories. Continue numbering from the highest existing story; never renumber or reuse an id.
+1. **Read.** Read the PRD and any existing stories. Create each new story with `e2e story new "<title>"`, which assigns the next number and file name; never renumber or reuse an id.
 2. **Slice.** Split by user outcome, not by layer. "Sign in with email" is a story; "create users table" is a task inside one. A story should be buildable and verifiable on its own in one SD2 plan. Split when a story has more than about six acceptance criteria or mixes unrelated outcomes.
 3. **Write.** For each story fill the template. Every acceptance criterion describes something observable: what the user does, what the system shows or stores. Include at least one failure or edge case where the feature has one.
 4. **Order.** Set `Depends on` only for real prerequisites (the story cannot be verified until the other is done). Fewer dependencies means more parallel work.
@@ -100,7 +100,7 @@ A story moves to `done` only when each acceptance criterion has evidence written
 
 | Situation | Action |
 | --- | --- |
-| PRD missing or too thin to name users and outcomes | Stop story writing, report the gap, and offer to draft the PRD from `templates/PRD.md`. |
+| PRD missing or too thin to name users and outcomes | Stop story writing, report the gap, and offer to draft the PRD (`e2e template copy PRD`). |
 | `e2e story check` reports a dependency cycle | Find the story that does not truly need the other and remove that dependency, or split the shared part into its own story. |
 | A criterion cannot be made testable | Ask what observable result would satisfy it; if unanswered, move it to `## Notes` as an open question. |
 | Story is `done` but check reports missing evidence | Set status back to `in-progress` unless the evidence exists and can be recorded now. |

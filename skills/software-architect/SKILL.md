@@ -99,7 +99,7 @@ Provide, as applicable:
 When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
 
 - Read first, when present: `PRD.md`.
-- Write `ARCHITECTURE.md` at the project root, starting from `templates/ARCHITECTURE.md`.
+- Write `ARCHITECTURE.md` at the project root, starting from the template: `e2e template copy ARCHITECTURE`.
 
 ## Definition of Done
 The architecture maps to the business/product requirements, identifies meaningful risks and trade-offs, explains major decisions, and provides a realistic implementation path.

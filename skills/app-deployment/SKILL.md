@@ -44,8 +44,8 @@ Ask when it cannot be inferred: the hosting target for a new project, and who th
 ## Outputs
 
 - A running deployment with a URL or identifier
-- `DEPLOYMENT.md` (from `templates/DEPLOYMENT.md`): targets, environments, build, configuration by variable name, smoke test, rollback steps, and evidence of the latest deploy
-- `RELEASE-CHECKLIST.md` (from `templates/RELEASE-CHECKLIST.md`) with evidence per item
+- `DEPLOYMENT.md` (start with `e2e template copy DEPLOYMENT`): targets, environments, build, configuration by variable name, smoke test, rollback steps, and evidence of the latest deploy
+- `RELEASE-CHECKLIST.md` (start with `e2e template copy RELEASE-CHECKLIST`) with evidence per item
 - A report: what was deployed where, smoke-test result, rollback path, cost-bearing resources created, remaining risks
 
 ## Workflow

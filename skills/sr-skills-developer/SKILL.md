@@ -104,7 +104,8 @@ Review the skill as an independent agent with no hidden context.
 
 Check:
 
-- trigger precision
+- trigger precision and routing comparison
+- frontmatter and artifact contract
 - scope
 - workflow completeness
 - decision quality
@@ -122,6 +123,16 @@ Fix findings, remove contradictory instructions, update examples/references, and
 ### 8. Approve
 
 Use the review workflow in `standards/SKILL-REVIEW-WORKFLOW.md`. Core skills should be reviewed toward L3 quality.
+
+## Registry Integration
+
+A skill is only useful if the registry selects it for the right tasks and no others. Follow "Frontmatter and Registry Integration" in `standards/SKILL-AUTHORING-STANDARD.md`:
+
+1. Write complete frontmatter, one line per key: `name`, `description`, `version`, `level`.
+2. If the skill reads or writes lifecycle documents, declare `consumes` and `produces`, make sure each produced document has a template (`e2e template list`), and run `e2e blueprint check`.
+3. Keep the description, Purpose, and Use When sections in the skill's own domain vocabulary. Generic words and the names of other skills cause accidental activation.
+4. Write boundaries as `Not a substitute for <skill> when …`.
+5. Compare routing before and after the change with `e2e context "<task>"` for tasks the skill should win and tasks it must not appear in. Record the comparison as verification evidence.
 
 ## Instruction Quality
 
