@@ -1,0 +1,6 @@
+$ python skills/credential-inventory/scripts/credentials_check.py --root . --code-scan
+# project: example/ with lib/email.ts, lib/auth.py, .github/workflows/ci.yml, .env.example referencing the registered variables, plus an unregistered TWILIO_AUTH_TOKEN
+WARN    TWILIO_AUTH_TOKEN: referenced in lib/email.ts but not registered
+TODO    LEGACY_MAILGUN_KEY: Source, Storage, Owner, Rotation = unknown
+credentials_check: OK (10 registered, 1 undocumented, 0 unused, 0 secret-like values)
+exit code: 0
