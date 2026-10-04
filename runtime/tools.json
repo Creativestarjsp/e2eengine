@@ -127,6 +127,55 @@
       "scopes": ["network.write", "repo.write"],
       "roles": ["sd1", "sd2"],
       "approval": "explicit"
+    },
+    {
+      "name": "deploy.preview",
+      "description": "Deploy a web app, API, or worker to a preview or staging environment.",
+      "transport": "runtime",
+      "risk": "write",
+      "scopes": ["deploy.preview", "network.write"],
+      "roles": ["sd1"],
+      "approval": "none",
+      "gate": "preview"
+    },
+    {
+      "name": "deploy.production",
+      "description": "Deploy or promote to production, or run production migrations.",
+      "transport": "runtime",
+      "risk": "destructive",
+      "scopes": ["deploy.production", "network.write"],
+      "roles": ["sd1"],
+      "approval": "explicit",
+      "gate": "production"
+    },
+    {
+      "name": "deploy.rollback",
+      "description": "Roll production back to the previously deployed version. Needs approval but no gate, so an incident is never blocked by a failing check.",
+      "transport": "runtime",
+      "risk": "destructive",
+      "scopes": ["deploy.rollback", "network.write"],
+      "roles": ["sd1"],
+      "approval": "explicit"
+    },
+    {
+      "name": "mobile.build",
+      "description": "Build a mobile app and distribute it to testers.",
+      "transport": "runtime",
+      "risk": "write",
+      "scopes": ["mobile.build", "network.write"],
+      "roles": ["sd1"],
+      "approval": "none",
+      "gate": "preview"
+    },
+    {
+      "name": "store.submit",
+      "description": "Submit a mobile build to the App Store or Google Play, start a production rollout, or publish a production OTA update.",
+      "transport": "runtime",
+      "risk": "destructive",
+      "scopes": ["store.submit", "network.write"],
+      "roles": ["sd1"],
+      "approval": "explicit",
+      "gate": "production"
     }
   ]
 }

@@ -89,6 +89,8 @@ NOT VERIFIED
 
 A technically elegant implementation that fails an approved business/product requirement is not complete.
 
+When the work is a story (`stories/STORY-<n>-*.md`), its acceptance criteria are the requirements. For each criterion, inspect the evidence written under the story's `## Evidence` heading and confirm it independently: run the named test or check the named artifact. A story marked `done` with a criterion that is `PARTIAL`, `FAIL`, or `NOT VERIFIED` is not approved, and `e2e story check` must pass.
+
 ## Architecture Review
 
 Evaluate:

@@ -47,6 +47,16 @@ UNDERSTAND → INSPECT → DECOMPOSE → DEPENDENCIES → ASSIGN → EXECUTE →
 11. Coordinate integration and run appropriate checks.
 12. Prepare an evidence-based handoff to SD3.
 
+### Blueprints and Stories
+
+When the work is a whole product or a feature of one, follow `architecture/BLUEPRINTS-AND-STORIES.md` instead of decomposing from scratch:
+
+- Check `e2e blueprint status <name>`. Plan only the current phase; do not start a phase whose inputs or earlier phases are missing.
+- Take the phase's skills from the blueprint and their order from the skills' `consumes`/`produces` contracts.
+- In the build phase, hand workers one story at a time (`e2e story next` lists what can start). Do not start a story with unfinished dependencies.
+- Treat reported `blockers` as facts to resolve or escalate, never as failures to retry.
+- A phase marked `approval: owner` needs the release owner's explicit approval; neither SD2 nor SD3 can grant it.
+
 ## Task Contract
 
 ```text

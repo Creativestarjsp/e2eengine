@@ -29,7 +29,7 @@ codebrain:
   required_for_impact_analysis: true
 
 hooks:
-  lifecycle: [pre-task, pre-context, pre-edit, post-edit, pre-test, post-test, pre-commit, verification]
+  lifecycle: [pre-task, pre-context, pre-edit, post-edit, pre-test, post-test, pre-commit, pre-deploy, verification]
   security_fail_closed: true
 
 verification:

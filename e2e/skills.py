@@ -60,6 +60,11 @@ def _strip_frontmatter(text: str) -> tuple[str, dict[str, str]]:
     return text[match.end():], meta
 
 
+def _artifacts(value: str) -> list[str]:
+    """A contract line such as ``consumes: PRD.md, stories/`` as a list."""
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
 def _section(text: str, headings: tuple[str, ...]) -> str:
     lines = text.splitlines()
     wanted = {h.lower() for h in headings}
@@ -128,6 +133,10 @@ def _parse(path: Path, root: Path) -> dict[str, Any]:
         "exclusions": exclusion_text[:1200],
         "disqualifying": disqualifying[:1200],
         "has_frontmatter": bool(meta),
+        # The artifact contract: what this skill reads and what it leaves
+        # behind. Blueprints use it to prove a phase has what it needs.
+        "consumes": _artifacts(meta.get("consumes", "")),
+        "produces": _artifacts(meta.get("produces", "")),
         "size": len(raw),
         # Kept separate so scoring never treats an exclusion as a trigger.
         "_positive": " ".join((path.parent.name.replace("-", " "), described_pos, purpose_pos, trigger_pos)).lower(),

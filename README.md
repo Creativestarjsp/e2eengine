@@ -304,6 +304,24 @@ e2e execute "add authentication"
 
 Execution is dry-run by default. Use `--execute` only when an external runtime is configured and the task is authorized.
 
+### Build a product end to end
+
+Blueprints sequence a whole product (stories → architecture → contracts → build → harden → preview → release); stories carry the acceptance criteria SD3 verifies.
+
+```bash
+e2e blueprint status full-stack-app
+e2e orchestrate "build the app" --blueprint full-stack-app
+e2e story next
+e2e orchestrate "sign in" --blueprint full-stack-app --story STORY-002
+e2e story check
+e2e deploy check --env preview        # gate a deploy: secrets, stories, credentials, preflight
+e2e deploy check --env production     # also needs recorded owner approval
+```
+
+The preview and release phases are run by `app-deployment` (Vercel, Firebase, Supabase, Railway, AWS, GCP, Azure, VPS), `ci-cd-pipeline`, `mobile-release`, and `observability`.
+
+See [`architecture/BLUEPRINTS-AND-STORIES.md`](architecture/BLUEPRINTS-AND-STORIES.md).
+
 ### Run evaluations
 
 ```bash
@@ -327,6 +345,7 @@ E2E/
 ├── standards/                  # Authoring, browser, quality, review standards
 ├── templates/                  # Reusable project templates
 ├── tests/                      # Runtime tests
+├── workflows/                  # Product blueprints (lifecycle phases)
 ├── AGENTS.md                   # Agent operating instructions
 ├── BRD.md                      # Business requirements
 ├── CLAUDE.md                   # Claude Code instructions
@@ -381,6 +400,7 @@ Key architecture documents include:
 - [`SD-AGENT-SYSTEM.md`](SD-AGENT-SYSTEM.md) — SD1/SD2/SD3 model
 - [`architecture/REGRESSION-INTELLIGENCE.md`](architecture/REGRESSION-INTELLIGENCE.md) — regression intelligence
 - [`architecture/CI-SELF-HEAL.md`](architecture/CI-SELF-HEAL.md) — CI repair loop
+- [`architecture/BLUEPRINTS-AND-STORIES.md`](architecture/BLUEPRINTS-AND-STORIES.md) — product lifecycle, skill contracts, user stories
 - [`architecture/PROOF-STANDARD.md`](architecture/PROOF-STANDARD.md) — production proof contract
 - [`architecture/TOOL-SYSTEM.md`](architecture/TOOL-SYSTEM.md) — tool architecture
 - [`architecture/DATABASE-ABSTRACTION.md`](architecture/DATABASE-ABSTRACTION.md) — persistence abstraction

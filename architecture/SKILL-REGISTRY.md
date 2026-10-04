@@ -23,6 +23,17 @@ security_class: normal
 compatible_runtimes: [claude-code, codex]
 ```
 
+### Artifact Contract
+
+Skills that take part in a product lifecycle also declare the artifacts they read and write:
+
+```yaml
+consumes: ARCHITECTURE.md, DATA-MODEL.md
+produces: API-CONTRACT.md
+```
+
+The registry exposes both as lists. Blueprints use them to order workers inside a phase and to prove each phase has its inputs; see `BLUEPRINTS-AND-STORIES.md`. Contracts are enforced in blueprint mode and advisory otherwise.
+
 ## Discovery
 
 Discovery order:

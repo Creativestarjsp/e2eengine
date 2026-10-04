@@ -1,6 +1,7 @@
 ---
 name: backend-developer
 description: "Implement backend services, business logic, validation, authentication, authorization, persistence and failure handling. Use for server-side implementation, service boundaries and backend tests. Not for database architecture, infrastructure or frontend work."
+consumes: ARCHITECTURE.md, DATA-MODEL.md, API-CONTRACT.md, stories/
 ---
 
 # Backend Developer
@@ -107,6 +108,13 @@ Return:
 - tests/checks performed
 - migration or compatibility notes
 - remaining risks
+
+## Lifecycle Artifacts
+
+When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
+
+- Read first, when present: `ARCHITECTURE.md`, `DATA-MODEL.md`, `API-CONTRACT.md`, `stories/`.
+- Build one story at a time against its acceptance criteria. If the work needs a change to the API contract or data model, report it for the owning skill rather than diverging silently.
 
 ## Definition of Done
 The behavior is implemented, validated, authorized, tested, observable where appropriate, compatible with affected consumers, and verified against the relevant failure paths.

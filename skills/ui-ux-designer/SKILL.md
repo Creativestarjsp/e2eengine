@@ -1,6 +1,8 @@
 ---
 name: ui-ux-designer
 description: "Design usable, accessible product experiences with an intentional visual and interaction system. Use for UX flows, information architecture, interaction design, visual direction, screen design, design systems and accessibility guidance. Not a substitute for frontend implementation."
+consumes: PRD.md, stories/
+produces: DESIGN.md
 ---
 
 # UI/UX Designer
@@ -118,6 +120,13 @@ Provide:
 - responsive behavior
 - content guidance
 - implementation notes
+
+## Lifecycle Artifacts
+
+When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
+
+- Read first, when present: `PRD.md`, `stories/`.
+- Write `DESIGN.md` at the project root, starting from `templates/DESIGN.md`.
 
 ## Definition of Done
 The design solves the intended user problem, has a coherent and product-specific visual/interaction direction, covers important states, meets accessibility and responsive expectations, and gives implementation enough information to build consistently.

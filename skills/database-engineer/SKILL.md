@@ -1,6 +1,8 @@
 ---
 name: database-engineer
 description: "Design correct, performant, migration-safe data models, queries, indexes and constraints. Use for schema design, migrations, query optimization, indexing, data integrity, persistence decisions and database testing."
+consumes: ARCHITECTURE.md
+produces: DATA-MODEL.md
 ---
 
 # Database Engineer
@@ -157,6 +159,13 @@ Return:
 - compatibility and rollback implications
 - verification results
 - remaining risks
+
+## Lifecycle Artifacts
+
+When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
+
+- Read first, when present: `ARCHITECTURE.md`.
+- Write `DATA-MODEL.md` at the project root, starting from `templates/DATA-MODEL.md`.
 
 ## Definition of Done
 The schema or query change is reproducible, integrity-safe, compatible with the application, appropriately isolated behind a persistence boundary when justified, tested against relevant behavior, and reviewed for performance and recovery implications.

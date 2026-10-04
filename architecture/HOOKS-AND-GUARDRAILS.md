@@ -21,6 +21,8 @@ post-test
   ↓
 pre-commit / release
   ↓
+pre-deploy
+  ↓
 verification
 ```
 

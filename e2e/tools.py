@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .deploy import GATES, gate_satisfied
+
 
 @dataclass(frozen=True)
 class Tool:
@@ -17,6 +19,8 @@ class Tool:
     scopes: tuple[str, ...]
     roles: tuple[str, ...]
     approval: str
+    #: Name of the deploy gate that must have passed for the current tree, or "".
+    gate: str = ""
 
 
 @dataclass(frozen=True)
@@ -46,6 +50,7 @@ def load_tools(root: Path) -> list[Tool]:
             scopes=tuple(item.get("scopes", [])),
             roles=tuple(item.get("roles", [])),
             approval=item.get("approval", "explicit"),
+            gate=item.get("gate", ""),
         )
         for item in data.get("tools", [])
     ]
@@ -55,33 +60,23 @@ def tool_map(root: Path) -> dict[str, Tool]:
     return {tool.name: tool for tool in load_tools(root)}
 
 
+def _policy_entry(tool: Tool, with_approval: bool) -> dict[str, Any]:
+    entry: dict[str, Any] = {"name": tool.name, "transport": tool.transport, "risk": tool.risk, "scopes": list(tool.scopes)}
+    if with_approval:
+        entry["approval"] = tool.approval
+    if tool.gate:
+        entry["gate"] = tool.gate
+    return entry
+
+
 def policy_for_role(root: Path, role: str) -> dict[str, Any]:
     tools = [tool for tool in load_tools(root) if role in tool.roles]
     return {
         "version": 1,
         "role": role,
         "default_policy": "deny",
-        "allowed_tools": [
-            {
-                "name": tool.name,
-                "transport": tool.transport,
-                "risk": tool.risk,
-                "scopes": list(tool.scopes),
-                "approval": tool.approval,
-            }
-            for tool in tools
-            if tool.approval == "none"
-        ],
-        "approval_required_tools": [
-            {
-                "name": tool.name,
-                "transport": tool.transport,
-                "risk": tool.risk,
-                "scopes": list(tool.scopes),
-            }
-            for tool in tools
-            if tool.approval == "explicit"
-        ],
+        "allowed_tools": [_policy_entry(tool, True) for tool in tools if tool.approval == "none"],
+        "approval_required_tools": [_policy_entry(tool, False) for tool in tools if tool.approval == "explicit"],
     }
 
 
@@ -102,6 +97,10 @@ def decide(root: Path, tool_name: str, role: str, scopes: set[str] | None = None
     missing = set(tool.scopes) - granted if scopes is not None else set()
     if missing:
         return ToolDecision(False, "missing-scope:" + ",".join(sorted(missing)), tool.approval == "explicit", tool_name, tuple(sorted(granted & set(tool.scopes))))
+    # The gate comes before approval: an owner should not be asked to approve
+    # a deploy that has not passed its checks for the tree being deployed.
+    if tool.gate and not gate_satisfied(root, tool.gate):
+        return ToolDecision(False, f"deploy-gate-required:{tool.gate}", tool.approval == "explicit", tool_name, tuple(sorted(granted & set(tool.scopes))))
     if tool.approval == "explicit" and not approved:
         return ToolDecision(False, "approval-required", True, tool_name, tuple(sorted(granted & set(tool.scopes))))
     return ToolDecision(True, "allowed", False, tool_name, tuple(sorted(granted & set(tool.scopes))))
@@ -151,5 +150,6 @@ def check_registry(root: Path) -> dict[str, Any]:
     names = [tool.name for tool in tools]
     duplicate_names = sorted({name for name in names if names.count(name) > 1})
     invalid = [tool.name for tool in tools if not tool.roles or not tool.scopes]
-    status = "pass" if not duplicate_names and not invalid else "fail"
-    return {"status": status, "path": str(path), "tools": len(tools), "duplicates": duplicate_names, "invalid": invalid}
+    invalid_gates = [tool.name for tool in tools if tool.gate and tool.gate not in GATES]
+    status = "pass" if not duplicate_names and not invalid and not invalid_gates else "fail"
+    return {"status": status, "path": str(path), "tools": len(tools), "duplicates": duplicate_names, "invalid": invalid, "invalid_gates": invalid_gates}

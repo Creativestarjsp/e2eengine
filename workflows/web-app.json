@@ -1,0 +1,110 @@
+{
+  "name": "web-app",
+  "description": "Web application with a backend API.",
+  "inputs": [
+    "PRD.md"
+  ],
+  "phases": [
+    {
+      "id": "define",
+      "objective": "Break the PRD into user stories with testable acceptance criteria.",
+      "skills": [
+        "story-writer"
+      ],
+      "produces": [
+        "stories/"
+      ]
+    },
+    {
+      "id": "architecture",
+      "objective": "Decide components, boundaries, and the deployment shape.",
+      "skills": [
+        "software-architect"
+      ],
+      "produces": [
+        "ARCHITECTURE.md"
+      ]
+    },
+    {
+      "id": "contracts",
+      "objective": "Fix the data model, API contract, and screen design before code is written against them.",
+      "depends_on": [
+        "define",
+        "architecture"
+      ],
+      "skills": [
+        "database-engineer",
+        "api-developer",
+        "ui-ux-designer"
+      ],
+      "produces": [
+        "DATA-MODEL.md",
+        "API-CONTRACT.md",
+        "DESIGN.md"
+      ]
+    },
+    {
+      "id": "build",
+      "objective": "Build and verify one story at a time until every story is done with evidence.",
+      "depends_on": [
+        "contracts"
+      ],
+      "skills": [
+        "backend-developer",
+        {
+          "skill": "react-js-developer",
+          "platforms": [
+            "web"
+          ]
+        },
+        "qa-engineer"
+      ],
+      "requires_stories_done": true
+    },
+    {
+      "id": "harden",
+      "objective": "Security review, code review, and a complete credential register.",
+      "depends_on": [
+        "build"
+      ],
+      "skills": [
+        "security-engineer",
+        "code-reviewer",
+        "credential-inventory"
+      ],
+      "produces": [
+        "CREDENTIALS.md"
+      ]
+    },
+    {
+      "id": "preview",
+      "objective": "Deploy to a preview environment, pass the smoke test, and automate the pipeline.",
+      "depends_on": [
+        "harden"
+      ],
+      "skills": [
+        "app-deployment",
+        "ci-cd-pipeline"
+      ],
+      "produces": [
+        "DEPLOYMENT.md",
+        "RELEASE-CHECKLIST.md"
+      ]
+    },
+    {
+      "id": "release",
+      "objective": "With owner approval: promote to production, verify monitoring, and hand over the runbook.",
+      "depends_on": [
+        "preview"
+      ],
+      "skills": [
+        "app-deployment",
+        "observability"
+      ],
+      "produces": [
+        "RUNBOOK.md"
+      ],
+      "approval": "owner"
+    }
+  ]
+}

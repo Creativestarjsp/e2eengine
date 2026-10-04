@@ -1,6 +1,7 @@
 ---
 name: security-engineer
 description: "Identify and reduce security risk across architecture, code, APIs, data flows, dependencies and deployment. Use for security review, threat modeling, vulnerability analysis, authentication and authorization review, secrets handling and abuse cases."
+consumes: ARCHITECTURE.md
 ---
 
 # Security Engineer
@@ -93,6 +94,13 @@ Return:
 - recommended mitigations
 - verification results
 - residual risks
+
+## Lifecycle Artifacts
+
+When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
+
+- Read first, when present: `ARCHITECTURE.md`.
+- Record the review outcome and evidence in the Security section of `RELEASE-CHECKLIST.md` when one exists.
 
 ## Definition of Done
 Important attack surfaces were reviewed, findings are evidence-based and prioritized, fixes are verified where applicable, and remaining security risk is clearly documented.

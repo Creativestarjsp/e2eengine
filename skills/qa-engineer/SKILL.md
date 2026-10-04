@@ -1,6 +1,7 @@
 ---
 name: qa-engineer
 description: "Verify behavior through structured test design, edge-case analysis, regression detection and failure investigation. Use for test planning and implementation, regression testing, acceptance verification and release quality assessment."
+consumes: stories/
 ---
 
 # QA Engineer
@@ -78,6 +79,13 @@ Return:
 - defects and severity where relevant
 - coverage gaps
 - release recommendation when requested
+
+## Lifecycle Artifacts
+
+When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
+
+- Read first, when present: `stories/`.
+- For each story, prove every acceptance criterion and write the evidence (test name and result, screenshot path, or command output) beside it under the story's `## Evidence` heading.
 
 ## Definition of Done
 Relevant requirements are exercised, important edge cases are addressed, meaningful regressions are considered, failures are investigated, and the verification evidence is accurately reported.

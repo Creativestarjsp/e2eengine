@@ -1,6 +1,7 @@
 ---
 name: react-native-cli-developer
 description: "Build React Native apps on the bare CLI workflow with native Android and iOS projects. Use for native module integration, platform APIs, Android/iOS build configuration and native release workflows. Not for Expo-managed projects, which have their own skill."
+consumes: DESIGN.md, API-CONTRACT.md, stories/
 ---
 
 # React Native CLI Developer
@@ -133,6 +134,13 @@ Never commit certificates, provisioning secrets, signing keys, API secrets, or c
 ## Output
 
 Report changed files, platform impact, checks performed, build/test results, and known limitations.
+
+## Lifecycle Artifacts
+
+When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
+
+- Read first, when present: `DESIGN.md`, `API-CONTRACT.md`, `stories/`.
+- Build one story at a time against its acceptance criteria and the screens in `DESIGN.md`.
 
 ## Definition of Done
 

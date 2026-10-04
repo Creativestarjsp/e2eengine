@@ -1,6 +1,7 @@
 ---
 name: expo-developer
 description: "Build, debug and ship React Native apps on Expo. Use for Expo SDK APIs and modules, Expo Router, app config, development builds, EAS Build, permissions and device capabilities, and OTA update strategy. Not for bare React Native CLI projects."
+consumes: DESIGN.md, API-CONTRACT.md, stories/
 ---
 
 # Expo Developer
@@ -148,6 +149,13 @@ Never commit signing credentials, private keys, or secrets.
 ## Output
 
 Report implementation details, Expo SDK/package impact, configuration changes, validation/build results, and known release limitations.
+
+## Lifecycle Artifacts
+
+When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
+
+- Read first, when present: `DESIGN.md`, `API-CONTRACT.md`, `stories/`.
+- Build one story at a time against its acceptance criteria and the screens in `DESIGN.md`.
 
 ## Definition of Done
 

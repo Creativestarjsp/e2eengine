@@ -8,8 +8,10 @@ from pathlib import Path
 
 from .adapters import capabilities, detect
 from .benchmark import run_case
+from .blueprints import check as check_blueprints, list_blueprints, status as blueprint_status
 from .brain import CodeBrain
 from .context import build_context
+from .deploy import GATES as DEPLOY_GATES, gate as deploy_gate, status as deploy_status
 from .evaluation import evaluate_run
 from .eval_harness import compare_baseline, load_suite, run_suite, command_runner
 from .executor import execute
@@ -23,6 +25,7 @@ from .release import release_check
 from .run_artifacts import persist_run
 from .runtime_contract import contract, parity
 from .skills import diagnose as diagnose_skills, discover, match
+from .stories import check as check_stories, load as load_stories, ready as ready_stories
 from .tool_gateway import serve, write_mcp_configs
 from .tools import check_registry, load_tools, policy_for_role
 from .verify import verify
@@ -62,9 +65,15 @@ def main(argv: list[str] | None = None) -> int:
     m = sub.add_parser("memory"); ms = m.add_subparsers(dest="memory_cmd", required=True); ml = ms.add_parser("list"); ml.add_argument("--scope"); ml.add_argument("--include-expired", action="store_true"); mq = ms.add_parser("search"); mq.add_argument("query"); mq.add_argument("--scope"); mq.add_argument("--limit", type=int, default=20); ma = ms.add_parser("add"); ma.add_argument("kind"); ma.add_argument("scope"); ma.add_argument("summary"); ma.add_argument("--evidence", action="append", default=[]); ma.add_argument("--source", default="runtime"); ma.add_argument("--confidence", default="verified"); ma.add_argument("--expires-days", type=int); ma.add_argument("--supersedes")
     b = sub.add_parser("brain"); bs = b.add_subparsers(dest="brain_cmd", required=True); bs.add_parser("build"); bs.add_parser("check"); bm = bs.add_parser("map"); bm.add_argument("path", nargs="?", default=""); bx = bs.add_parser("search"); bx.add_argument("query"); bi = bs.add_parser("impact"); bi.add_argument("target")
     rt = sub.add_parser("runtime"); rts = rt.add_subparsers(dest="runtime_cmd", required=True); rti = rts.add_parser("inspect"); rti.add_argument("--runtime", choices=("claude-code", "codex")); rti.add_argument("--role", choices=("sd1", "sd2", "sd3"), default="sd1"); rtc = rts.add_parser("contract"); rtc.add_argument("--runtime", choices=("claude-code", "codex"), required=True); rtc.add_argument("--role", choices=("sd1", "sd2", "sd3"), default="sd1"); rtp = rts.add_parser("parity"); rtp.add_argument("--role", choices=("sd1", "sd2", "sd3"), default="sd1")
+    st = sub.add_parser("story"); sts = st.add_subparsers(dest="story_cmd", required=True); sts.add_parser("list"); sts.add_parser("check"); sts.add_parser("next")
+    bp = sub.add_parser("blueprint"); bps = bp.add_subparsers(dest="blueprint_cmd", required=True); bps.add_parser("list"); bps.add_parser("check"); bpst = bps.add_parser("status"); bpst.add_argument("name")
+    dp = sub.add_parser("deploy"); dps = dp.add_subparsers(dest="deploy_cmd", required=True); dpc = dps.add_parser("check"); dpc.add_argument("--env", choices=DEPLOY_GATES, default="preview"); dpc.add_argument("--test", dest="test_command", help="Test command to run as part of the gate"); dps.add_parser("status")
     r = sub.add_parser("run"); r.add_argument("task")
     o = sub.add_parser("orchestrate"); o.add_argument("task")
     e = sub.add_parser("execute"); e.add_argument("task"); e.add_argument("--runtime", choices=("auto", "claude-code", "codex"), default="auto"); e.add_argument("--execute", dest="execute_agents", action="store_true", help="Actually launch SD1/SD3 agents; default is dry-run"); e.add_argument("--max-workers", type=int, default=4)
+    for planner in (r, o, e):
+        planner.add_argument("--blueprint", help="Follow this blueprint's next ready phase instead of matching skills by task text")
+        planner.add_argument("--story", help="Build one story, e.g. STORY-012; its acceptance criteria go to SD3")
     v = sub.add_parser("verify"); v.add_argument("--test", dest="test_command")
     be = sub.add_parser("benchmark"); be.add_argument("command"); be.add_argument("--repetitions", type=int, default=1)
     ev = sub.add_parser("evaluate"); ev.add_argument("task"); ev.add_argument("--reports", required=True, help="Path to a JSON file containing worker reports")
@@ -138,10 +147,36 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         if args.runtime_cmd == "contract": print(json.dumps(contract(root, args.runtime, args.role), indent=2)); return 0
         result = parity(root, args.role); print(json.dumps(result, indent=2)); return 0 if result["status"] == "pass" else 1
+    if args.cmd == "story":
+        if args.story_cmd == "check":
+            result = check_stories(root); print(json.dumps(result, indent=2)); return 0 if result["status"] == "pass" else 1
+        stories = ready_stories(root) if args.story_cmd == "next" else load_stories(root)
+        print(json.dumps(stories, indent=2)); return 0
+    if args.cmd == "blueprint":
+        if args.blueprint_cmd == "check":
+            result = check_blueprints(root); print(json.dumps(result, indent=2)); return 0 if result["status"] == "pass" else 1
+        if args.blueprint_cmd == "list":
+            print(json.dumps([{"name": b["name"], "description": b.get("description", ""), "inputs": b.get("inputs", []), "phases": [ph.get("id") for ph in b.get("phases", [])]} for b in list_blueprints(root)], indent=2)); return 0
+        try:
+            result = blueprint_status(root, args.name)
+        except ValueError as exc:
+            print(json.dumps({"status": "rejected", "reason": str(exc)}, indent=2)); return 1
+        print(json.dumps(result, indent=2)); return 0
+    if args.cmd == "deploy":
+        if args.deploy_cmd == "status":
+            print(json.dumps(deploy_status(root), indent=2)); return 0
+        result = deploy_gate(root, args.env, args.test_command); print(json.dumps(result, indent=2)); return 0 if result["status"] == "pass" else 1
     if args.cmd in {"run", "orchestrate"}:
-        result = write_plan(root, args.task); print(json.dumps(result, indent=2)); return 0
+        try:
+            result = write_plan(root, args.task, blueprint=args.blueprint, story=args.story)
+        except ValueError as exc:
+            print(json.dumps({"status": "rejected", "reason": str(exc)}, indent=2)); return 1
+        print(json.dumps(result, indent=2)); return 0
     if args.cmd == "execute":
-        result = execute(root, args.task, runtime=args.runtime, execute_agents=args.execute_agents, max_workers=max(1, min(args.max_workers, 4)))
+        try:
+            result = execute(root, args.task, runtime=args.runtime, execute_agents=args.execute_agents, max_workers=max(1, min(args.max_workers, 4)), blueprint=args.blueprint, story=args.story)
+        except ValueError as exc:
+            print(json.dumps({"status": "rejected", "reason": str(exc)}, indent=2)); return 1
         if args.execute_agents:
             evaluation = evaluate_run(root, args.task, result.get("workers", []))
             introspection = diagnose(root, result)

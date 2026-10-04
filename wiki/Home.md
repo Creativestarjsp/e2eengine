@@ -81,7 +81,7 @@ E2E Engine is therefore an **engineering control and verification layer**, not j
 
 Bounded specialist workers perform implementation tasks and return structured results and evidence.
 
-Examples include frontend, backend, API, database, QA, security, DevOps, UI/UX, architecture, SEO, and web-intelligence work.
+Examples include frontend, backend, API, database, QA, security, credential-inventory, deployment, mobile release, DevOps, UI/UX, architecture, SEO, and web-intelligence work.
 
 ### SD2 — Orchestrator
 
@@ -266,6 +266,20 @@ See [`architecture/WEB-INTELLIGENCE.md`](../architecture/WEB-INTELLIGENCE.md).
 
 ---
 
+## Blueprints and Stories
+
+A blueprint sequences a whole product through its phases: stories, architecture, contracts, build, hardening, preview deploy, release. Each phase ends with an artifact, and the next phase cannot start without it.
+
+Features move through the build phase as user stories. Each story carries acceptance criteria; SD3 approves it only when every criterion has evidence.
+
+Blueprints ship for a web app, a mobile app, and a full-stack app (web + mobile + API).
+
+Deployment is handled by dedicated skills: `app-deployment` (Vercel, Firebase, Supabase, Railway, AWS, GCP, Azure, VPS), `ci-cd-pipeline`, `mobile-release`, and `observability`. Production and store releases require explicit owner approval.
+
+See [`architecture/BLUEPRINTS-AND-STORIES.md`](../architecture/BLUEPRINTS-AND-STORIES.md).
+
+---
+
 ## Evidence and Run Artifacts
 
 Engineering runs can produce evidence covering:
@@ -379,6 +393,7 @@ Important repository documents:
 - [`architecture/TOOL-SYSTEM.md`](../architecture/TOOL-SYSTEM.md) — tool architecture
 - [`architecture/WEB-INTELLIGENCE.md`](../architecture/WEB-INTELLIGENCE.md) — web intelligence capability
 - [`architecture/CI-SELF-HEAL.md`](../architecture/CI-SELF-HEAL.md) — CI repair loop
+- [`architecture/BLUEPRINTS-AND-STORIES.md`](../architecture/BLUEPRINTS-AND-STORIES.md) — product lifecycle, skill contracts, user stories
 - [`runtime/RUNTIME-ADAPTER-STANDARD.md`](../runtime/RUNTIME-ADAPTER-STANDARD.md) — runtime contract
 - [`standards/SKILL-AUTHORING-STANDARD.md`](../standards/SKILL-AUTHORING-STANDARD.md) — skill quality standard
 

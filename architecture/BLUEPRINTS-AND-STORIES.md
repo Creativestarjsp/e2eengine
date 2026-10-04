@@ -1,0 +1,117 @@
+# Blueprints and Stories
+
+## Purpose
+
+Carry a product from requirements to a deployed, operable release with every
+step gated by an artifact, instead of relying on the wording of each task to
+pick the right specialists.
+
+Three pieces work together:
+
+| Piece | Answers | Lives in | Engine module |
+|---|---|---|---|
+| Skill contract | What does this skill read and leave behind? | `consumes:` / `produces:` in `SKILL.md` frontmatter | `e2e/skills.py` |
+| Blueprint | Which phases does this product type go through, and what ends each? | `workflows/<name>.json` | `e2e/blueprints.py` |
+| Story | What is one feature, and what proves it is done? | `stories/STORY-<n>-<slug>.md` | `e2e/stories.py` |
+
+## Lifecycle
+
+```text
+PRD.md
+  → define        story-writer                      → stories/
+  → architecture  software-architect                → ARCHITECTURE.md
+  → contracts     database-engineer → api-developer → DATA-MODEL.md, API-CONTRACT.md
+                  ui-ux-designer                    → DESIGN.md
+  → build         backend ∥ web ∥ mobile ∥ qa       → every story done, with evidence
+  → harden        security, code review, credentials → CREDENTIALS.md
+  → preview       app-deployment → ci-cd-pipeline,  → DEPLOYMENT.md, RELEASE-CHECKLIST.md
+                  mobile-release
+  → release       app-deployment → mobile-release,  → RUNBOOK.md
+                  observability (owner approval)
+```
+
+A phase may start only when the phases it depends on are complete and the
+blueprint's inputs exist. A phase is complete when its artifacts exist and, for
+the build phase, every story is `done`.
+
+## Skill Contracts
+
+```yaml
+consumes: ARCHITECTURE.md, DATA-MODEL.md
+produces: API-CONTRACT.md
+```
+
+- Artifact names are paths relative to the project root; a trailing `/` means a directory.
+- Each produced document has a template in `templates/` (the credential register's lives with its skill).
+- Contracts are enforced when a blueprint is used. Outside a blueprint they are
+  advisory: a skill asked to add one endpoint does not need an architecture document.
+- `e2e blueprint check` fails when a phase needs an artifact that no input,
+  earlier phase, or skill in the same phase provides, or when a phase claims an
+  artifact none of its skills produces.
+
+## Blueprints
+
+Schema and commands: `workflows/README.md`.
+
+SD2 behaviour with `--blueprint`:
+
+1. The first ready phase supplies the skills. Task text no longer selects them.
+2. Inside the phase, workers are ordered by contract: a skill that consumes what
+   another produces waits for it. Everything else runs in parallel, up to the
+   worker limit; skills beyond the limit are reported as deferred.
+3. Missing inputs, a completed blueprint, or no ready phase are reported as
+   `blockers`, and no worker is launched.
+4. A phase marked `approval: owner` sets `owner_approval_required` on the SD3
+   gate. The engine reports the requirement; it never grants the approval.
+
+## Stories
+
+Format: `templates/STORY.md`. Authoring method: `skills/story-writer/SKILL.md`.
+
+- `Status`: `todo`, `in-progress`, `done`.
+- `Depends on`: stories that must be `done` first. SD2 will not start a story with unmet dependencies.
+- `Platforms`: a web-only story does not launch mobile workers, and the reverse.
+- Acceptance criteria (`- AC1: …`) are handed to the workers and to SD3. The SD3
+  gate gains the `acceptance-traceability` check and the criteria themselves.
+- A story is `done` only when every criterion has evidence. `e2e story check`
+  fails otherwise.
+
+Inside a blueprint, a story can be planned only in the phase that sets
+`requires_stories_done`; asking earlier yields a blocker naming the phase that
+must finish first.
+
+## Deployment Phases
+
+Four skills run the last two phases. Each checks its own preconditions with a script, so a deploy cannot rest on a copied template:
+
+| Skill | Does | Script |
+|---|---|---|
+| `app-deployment` | Deploys web and backend components to Vercel, Firebase, Supabase, Railway, AWS, GCP, Azure, or a VPS; writes `DEPLOYMENT.md` and `RELEASE-CHECKLIST.md` | `deploy_preflight.py`, `smoke_test.py` |
+| `ci-cd-pipeline` | Automates the recorded deploy in GitHub Actions | `workflow_lint.py` |
+| `mobile-release` | Builds, distributes to testers, submits to the stores, publishes OTA updates | `mobile_preflight.py` |
+| `observability` | Health checks, logs, error tracking, alerts; writes `RUNBOOK.md` | uses `smoke_test.py` |
+
+In `preview`, the app is deployed first; the pipeline and the mobile build wait for it because they consume `DEPLOYMENT.md`. In `release`, production is promoted first, then monitoring is verified and the mobile app submitted. `deploy_preflight.py --env production` fails unless `DEPLOYMENT.md` has real targets, smoke test, rollback, and evidence, and `RELEASE-CHECKLIST.md` names the release owner and approval date.
+
+## Commands
+
+```sh
+e2e story list | check | next
+e2e blueprint list | check | status <name>
+e2e orchestrate "<task>" --blueprint <name> [--story STORY-<n>]
+e2e execute     "<task>" --blueprint <name> [--story STORY-<n>]
+e2e deploy check --env preview|production [--test "<command>"]
+e2e deploy status
+```
+
+Without `--blueprint` and `--story`, planning behaves exactly as before.
+
+## Limits
+
+- Artifact checks test presence, not quality. A copied, unfilled template
+  completes a phase as far as the engine can tell; SD3 judges the content.
+- Only the first ready phase is planned, even when two phases could run side by side.
+- Evidence is recorded text. The engine does not run the test it names.
+- The engine decides whether a deploy capability may be used (`architecture/TOOL-SYSTEM.md`,
+  Deploy gate) but does not run the platform's deploy command itself; an agent
+  with unrestricted shell access is bound by the skill rules, not by the gate.

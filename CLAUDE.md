@@ -62,6 +62,10 @@ Use `architecture/CONTEXT-AND-RULES.md` for context precedence and bounded conte
 
 Use `architecture/CODEBRAIN.md` for repository graph, symbol, dependency, retrieval, and impact-analysis contracts. CodeBrain facts must have provenance and incomplete coverage must be reported.
 
+## Blueprints and Stories
+
+Use `architecture/BLUEPRINTS-AND-STORIES.md` when building a product or feature end to end. Follow the blueprint's current phase, build one story at a time, and never mark a story `done` without evidence for every acceptance criterion.
+
 ## Verification
 
 Use `architecture/VERIFICATION.md`. Completion claims require evidence. Distinguish facts, inspected evidence, assumptions, and unknowns.
