@@ -1,6 +1,8 @@
 ---
 name: ui-ux-designer
 description: "Design usable, accessible product experiences with an intentional visual and interaction system. Use for UX flows, information architecture, interaction design, visual direction, screen design, design systems and accessibility guidance. Not a substitute for frontend implementation."
+consumes: PRD.md, stories/
+produces: DESIGN.md
 ---
 
 # UI/UX Designer
@@ -118,6 +120,21 @@ Provide:
 - responsive behavior
 - content guidance
 - implementation notes
+
+## Screen Patterns
+
+Start each screen from the matching pattern in `references/screen-patterns.md` (navigation shell, sign-in, onboarding, dashboard, list and detail, search, forms, settings, checkout, profile, notifications, and the states every screen has). Adapt it to the product and record any deviation and its reason in `DESIGN.md`. Decide whether a view needs artwork with the `vector-illustration` skill; most do not. Specify transitions and feedback in the `## Motion` table of `DESIGN.md` using `ui-motion`'s tokens.
+
+## UX Principles
+
+When creating or changing a screen, apply the relevant laws in `skills/ux-laws/references/ux-laws.md` and the rules in `skills/ux-laws/references/platform-and-accessibility.md`. Apply them in the work itself; do not narrate them. For a scored review of an existing interface, use the `ux-laws` skill.
+
+## Lifecycle Artifacts
+
+When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
+
+- Read first, when present: `PRD.md`, `stories/`.
+- Write `DESIGN.md` at the project root, starting from the template: `e2e template copy DESIGN`.
 
 ## Definition of Done
 The design solves the intended user problem, has a coherent and product-specific visual/interaction direction, covers important states, meets accessibility and responsive expectations, and gives implementation enough information to build consistently.

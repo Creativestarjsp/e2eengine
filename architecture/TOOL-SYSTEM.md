@@ -63,8 +63,31 @@ Use narrow scopes instead of broad access:
 - `secrets.use`
 - `db.read`
 - `db.write`
+- `deploy.preview`
+- `deploy.production`
+- `deploy.rollback`
+- `mobile.build`
+- `store.submit`
 
 A worker receives only the scopes required by its assigned task.
+
+## Deploy gate
+
+Deploy capabilities carry a `gate` in the registry. `decide()` refuses a gated tool unless that gate has passed for the tree as it is now:
+
+| Tool | Approval | Gate |
+|---|---|---|
+| `deploy.preview` | none | `preview` |
+| `mobile.build` | none | `preview` |
+| `deploy.production` | explicit | `production` |
+| `store.submit` | explicit | `production` |
+| `deploy.rollback` | explicit | none, so an incident is never blocked by a failing check |
+
+`e2e deploy check --env preview|production [--test "<command>"]` runs the gate (`e2e/deploy.py`): version control, secret scan, story check, credential register, deploy preflight, and the mobile and workflow checks where they apply. It composes the deployment skills' own scripts rather than duplicating them. The result is recorded in `.e2e/deploy-gate.json` with the commit and a digest of local changes; any edit or new commit makes it stale. A passing production gate also satisfies preview.
+
+Production fails closed: a check that cannot run counts as a failure. The gate comes before approval in the decision order, so an owner is never asked to approve a deploy that has not passed its checks. The gate verifies that owner approval is *recorded* in `RELEASE-CHECKLIST.md`; it does not grant it.
+
+`e2e deploy status` shows each gate and whether it still applies to the current tree.
 
 ## MCP boundary
 

@@ -86,6 +86,10 @@ Also define important non-trigger cases.
 
 Avoid overly broad triggers that cause unnecessary skill activation.
 
+### Frontmatter, contracts, and routing vocabulary
+
+Frontmatter keys, the `consumes` / `produces` artifact contract, and the rules for the words used in the description, Purpose, and trigger sections are defined in `standards/SKILL-AUTHORING-STANDARD.md` under "Frontmatter and Registry Integration". They are mandatory: the registry routes on that text, and a generic word there pulls the skill into unrelated tasks.
+
 ## 6. Inputs and Outputs
 
 Define the minimum required information.
@@ -332,6 +336,7 @@ Before merging a skill, ask:
 - Is validation reproducible?
 - Does the skill duplicate existing capabilities?
 - Does it follow repository conventions?
+- Was routing compared before and after, with unrelated tasks unchanged?
 
 ## 22. Quality Levels
 

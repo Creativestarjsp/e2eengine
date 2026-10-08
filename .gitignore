@@ -70,3 +70,7 @@ out/
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Local-only skills (not published)
+skills/hr-recruitment-services/
+tests/test_hr_recruitment_skill.py

@@ -195,6 +195,7 @@ The correction loop is bounded at two rounds. Failed workers, merge conflicts, m
 - `architecture/RELEASE-GATES.md`
 - `architecture/MINIMALITY-AND-CORRECTNESS.md`
 - `architecture/TOOL-SYSTEM.md`
+- `architecture/BLUEPRINTS-AND-STORIES.md`
 
 ## Engineering Principles
 

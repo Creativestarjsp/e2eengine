@@ -1,6 +1,7 @@
 ---
 name: react-js-developer
 description: "Build, refactor and review production React web applications. Use for React components, hooks, state, context and composition, React web architecture, routing and data loading, forms, and React performance work. Not for React Native or Expo apps."
+consumes: DESIGN.md, API-CONTRACT.md, stories/
 ---
 
 # React JS Developer
@@ -203,6 +204,17 @@ Never place secrets intended for server-side use into client-side code.
 ## Output
 
 Produce the requested React implementation plus a concise implementation/verification summary.
+
+## UX Principles
+
+When creating or changing a screen, apply the relevant laws in `skills/ux-laws/references/ux-laws.md` and the rules in `skills/ux-laws/references/platform-and-accessibility.md`. Apply them in the work itself; do not narrate them. For a scored review of an existing interface, use the `ux-laws` skill.
+
+## Lifecycle Artifacts
+
+When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
+
+- Read first, when present: `DESIGN.md`, `API-CONTRACT.md`, `stories/`.
+- Build one story at a time against its acceptance criteria and the screens in `DESIGN.md`.
 
 ## Definition of Done
 

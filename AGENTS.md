@@ -13,6 +13,10 @@ Context + Rules → CodeBrain → SD3 → SD2 → SD1 → Skills → Tools → V
 - Use `python -m e2e` or the installed `e2e` command for runtime inspection.
 - Never bypass hooks, verification, or security controls.
 
+## Blueprints and Stories
+
+Use `architecture/BLUEPRINTS-AND-STORIES.md` when building a product or feature end to end. Follow the blueprint's current phase, build one story at a time, and never mark a story `done` without evidence for every acceptance criterion.
+
 ## Minimality
 
 Before adding code: need → reuse → stdlib → native → installed dependency → simple implementation → custom abstraction.

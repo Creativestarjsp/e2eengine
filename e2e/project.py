@@ -23,6 +23,12 @@ DEFAULT_SKILLS_PATHS = ("skills", ".e2e/skills")
 #: Colon-separated paths, highest precedence. Mirrors PATH semantics.
 SKILLS_PATH_ENV = "E2E_SKILLS_PATH"
 
+#: Blueprints and templates ship beside the skills, and resolve the same way.
+DEFAULT_BLUEPRINT_PATHS = ("workflows", ".e2e/workflows")
+BLUEPRINTS_PATH_ENV = "E2E_BLUEPRINTS_PATH"
+DEFAULT_TEMPLATE_PATHS = ("templates", ".e2e/templates")
+TEMPLATES_PATH_ENV = "E2E_TEMPLATES_PATH"
+
 
 def config_path(root: str | Path = ".") -> Path:
     return Path(root).resolve() / CONFIG_FILENAME
@@ -70,6 +76,48 @@ def skills_paths(root: str | Path = ".") -> list[Path]:
     return resolved
 
 
+def configured_paths(root: str | Path, config_key: str, env_name: str, defaults: tuple[str, ...]) -> list[Path]:
+    """Resolve a list of search directories: environment, then config, then defaults."""
+    root = Path(root).resolve()
+    env = os.environ.get(env_name, "").strip()
+    if env:
+        raw = [p for p in env.split(os.pathsep) if p]
+    else:
+        configured = load_config(root).get(config_key)
+        raw = [str(p) for p in configured] if isinstance(configured, list) and configured else list(defaults)
+    resolved: list[Path] = []
+    for entry in raw:
+        candidate = Path(entry)
+        candidate = candidate if candidate.is_absolute() else root / candidate
+        if candidate not in resolved:
+            resolved.append(candidate)
+    return resolved
+
+
+def blueprint_paths(root: str | Path = ".") -> list[Path]:
+    return configured_paths(root, "blueprints_paths", BLUEPRINTS_PATH_ENV, DEFAULT_BLUEPRINT_PATHS)
+
+
+def template_paths(root: str | Path = ".") -> list[Path]:
+    return configured_paths(root, "templates_paths", TEMPLATES_PATH_ENV, DEFAULT_TEMPLATE_PATHS)
+
+
+def _beside_skills(root: Path, skills: list[str], folder: str, defaults: tuple[str, ...]) -> list[str]:
+    """Blueprints and templates normally live next to the skills directory.
+
+    When a project points at skills elsewhere, look for the sibling folder so
+    one flag is enough to adopt a shared skill library. The project's own
+    folders stay first, so it can override a shared blueprint or template.
+    """
+    found: list[str] = []
+    for entry in skills:
+        sibling = Path(entry).parent / folder
+        resolved = sibling if sibling.is_absolute() else root / sibling
+        if resolved.is_dir() and sibling.as_posix() not in found and sibling.as_posix() not in defaults:
+            found.append(sibling.as_posix())
+    return list(defaults) + found
+
+
 def skills_source(root: str | Path = ".") -> str:
     """Where the skill paths came from: ``env:…``, ``config:…`` or ``default``."""
     return _configured_paths(Path(root).resolve())[1]
@@ -79,6 +127,8 @@ def init(
     root: str | Path = ".",
     skills: list[str] | None = None,
     force: bool = False,
+    blueprints: list[str] | None = None,
+    templates: list[str] | None = None,
 ) -> dict[str, Any]:
     """Create the project scaffolding `e2e` expects, idempotently.
 
@@ -106,6 +156,8 @@ def init(
         config = {
             "schema_version": SCHEMA_VERSION,
             "skills_paths": requested,
+            "blueprints_paths": blueprints or _beside_skills(root, requested, "workflows", DEFAULT_BLUEPRINT_PATHS),
+            "templates_paths": templates or _beside_skills(root, requested, "templates", DEFAULT_TEMPLATE_PATHS),
             "brain_store": f"{STATE_DIR}/brain.json",
         }
         config_file.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
@@ -126,6 +178,14 @@ def init(
             + f". Set {SKILLS_PATH_ENV} or edit skills_paths in {CONFIG_FILENAME}."
         )
 
+    blueprints_found = sum(len(list(p.glob("*.json"))) for p in blueprint_paths(root) if p.is_dir())
+    templates_found = sum(len(list(p.glob("*.md"))) for p in template_paths(root) if p.is_dir())
+    notes: list[str] = []
+    if blueprints_found == 0:
+        notes.append(f"No blueprints found; `e2e blueprint list` will be empty. Use --blueprints-path or set {BLUEPRINTS_PATH_ENV}.")
+    if templates_found == 0:
+        notes.append(f"No templates found; `e2e template list` will be empty. Use --templates-path or set {TEMPLATES_PATH_ENV}.")
+
     return {
         "status": "initialized",
         "root": str(root),
@@ -134,5 +194,10 @@ def init(
         "skills_paths": [p.as_posix() for p in skills_paths(root)],
         "skills_found": found,
         "missing_skills_paths": missing,
+        "blueprints_paths": [p.as_posix() for p in blueprint_paths(root)],
+        "blueprints_found": blueprints_found,
+        "templates_paths": [p.as_posix() for p in template_paths(root)],
+        "templates_found": templates_found,
         "warnings": warnings,
+        "notes": notes,
     }

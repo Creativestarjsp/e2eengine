@@ -126,7 +126,7 @@ def _supervise(root: Path, task: str, runtime: str, workers: list[dict[str, Any]
     return {"id": "sd3-supervisor", "returncode": proc.returncode, "stdout": proc.stdout[-16000:], "stderr": proc.stderr[-12000:], "duration_seconds": round(time.time() - started, 3), "status": "completed" if proc.returncode == 0 else "failed", "report": _parse_supervisor_output(proc.stdout), "tool_policy": str(policy_path.relative_to(root)), "mcp_config": str(mcp_config.relative_to(root))}
 
 
-def execute(root: str | Path, task: str, runtime: str = "auto", execute_agents: bool = False, max_workers: int = 4) -> dict[str, Any]:
+def execute(root: str | Path, task: str, runtime: str = "auto", execute_agents: bool = False, max_workers: int = 4, blueprint: str | None = None, story: str | None = None) -> dict[str, Any]:
     root = Path(root).resolve()
     selected = runtime
     if selected == "auto":
@@ -135,7 +135,21 @@ def execute(root: str | Path, task: str, runtime: str = "auto", execute_agents: 
     if selected == "unavailable":
         execution.update(status="runtime-unavailable", next="Install Claude Code or Codex, or select a configured runtime.")
         return execution
-    p = plan(root, task)
+    # Only name the options that were asked for, so the default path still
+    # makes the two-argument call existing callers and stubs expect.
+    options = {key: value for key, value in (("blueprint", blueprint), ("story", story)) if value}
+    p = plan(root, task, **options)
+    for key in ("blueprint", "story"):
+        if p.get(key):
+            execution[key] = p[key]
+    if p.get("blockers"):
+        # A missing input or an unfinished dependency is a fact about the
+        # project, not a failure to retry: report it and launch nothing.
+        execution.update(status="blocked", blockers=p["blockers"], next="Resolve the blockers, then plan again.")
+        return execution
+    # Agents see the acceptance criteria next to the task; planning and worker
+    # ids keep using the task as the caller wrote it.
+    agent_task = f"{task}\n\n{p['story']['brief']}" if p.get("story") else task
     if execute_agents:
         intelligence = p.get("intelligence") or build_intelligence(root, task, p)
     else:
@@ -164,7 +178,7 @@ def execute(root: str | Path, task: str, runtime: str = "auto", execute_agents: 
             break
         batch = ready[: execution["max_workers"]]
         with ThreadPoolExecutor(max_workers=len(batch)) as pool:
-            futures = {pool.submit(_run_worker, root, task, selected, worker, base_ref): worker for worker in batch}
+            futures = {pool.submit(_run_worker, root, agent_task, selected, worker, base_ref): worker for worker in batch}
             results = [(futures[f], *f.result()) for f in as_completed(futures)]
         results.sort(key=lambda item: batch.index(item[0]))
         for worker, result, workspace in results:
@@ -197,7 +211,7 @@ def execute(root: str | Path, task: str, runtime: str = "auto", execute_agents: 
     if execution.get("status") is None:
         execution["brain_refresh"] = _refresh_brain(root)
         for correction_round in range(MAX_CORRECTIONS + 1):
-            supervisor = _supervise(root, task, selected, execution["workers"], correction_round)
+            supervisor = _supervise(root, agent_task, selected, execution["workers"], correction_round)
             execution["supervisor"] = supervisor
             if supervisor["status"] != "completed":
                 execution["status"] = "supervisor-failure"

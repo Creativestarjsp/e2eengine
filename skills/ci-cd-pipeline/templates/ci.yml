@@ -1,0 +1,44 @@
+# Continuous integration: the required check for every pull request.
+# Replace each <placeholder>, then run workflow_lint.py; it fails while any remain.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # Pin to the action's current released major version or a commit SHA.
+      - uses: actions/checkout@<version>
+
+      - name: Set up runtime
+        uses: <setup-action>@<version>   # e.g. the setup action for Node, Python, or Go
+        with:
+          <version-input>: <runtime-version>
+          cache: <package-manager>
+
+      - name: Install dependencies
+        run: <install-command>            # use the lockfile-respecting form
+
+      - name: Lint
+        run: <lint-command>
+
+      - name: Type check
+        run: <typecheck-command>
+
+      - name: Test
+        run: <test-command>
+
+      - name: Build
+        run: <build-command>

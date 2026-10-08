@@ -1,0 +1,50 @@
+/* Motion tokens: one place to tune, one place to switch off. */
+:root {
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 320ms;
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-slow: 0ms;
+  }
+}
+
+/* Press feedback: transform and opacity only, properties named. */
+.button {
+  transition: transform var(--motion-fast) var(--ease-out), opacity var(--motion-fast) var(--ease-out);
+}
+.button:active {
+  transform: scale(0.97);
+}
+.button:disabled {
+  opacity: 0.5;
+}
+
+/* A sheet sliding up: moved with transform, never with `bottom` or `height`. */
+.sheet {
+  transform: translateY(100%);
+  transition: transform var(--motion-slow) var(--ease-out);
+}
+.sheet[data-open="true"] {
+  transform: translateY(0);
+}
+
+/* A disclosure that changes height: animate the grid track, not `height`. */
+.disclosure {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--motion-base) var(--ease-in-out);
+}
+.disclosure[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.disclosure > * {
+  overflow: hidden;
+}

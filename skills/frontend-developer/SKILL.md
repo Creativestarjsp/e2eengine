@@ -1,6 +1,7 @@
 ---
 name: frontend-developer
 description: "Build accessible, responsive, maintainable frontend experiences that fit the existing architecture and design language. Use for component work, client-side state, responsive behavior, accessibility and frontend tests. Not for backend APIs, database design or infrastructure."
+consumes: DESIGN.md, API-CONTRACT.md, stories/
 ---
 
 # Frontend Developer
@@ -105,6 +106,17 @@ Return:
 - important decisions
 - verification performed
 - remaining risks or assumptions
+
+## UX Principles
+
+When creating or changing a screen, apply the relevant laws in `skills/ux-laws/references/ux-laws.md` and the rules in `skills/ux-laws/references/platform-and-accessibility.md`. Apply them in the work itself; do not narrate them. For a scored review of an existing interface, use the `ux-laws` skill.
+
+## Lifecycle Artifacts
+
+When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
+
+- Read first, when present: `DESIGN.md`, `API-CONTRACT.md`, `stories/`.
+- Build one story at a time against its acceptance criteria and the screens in `DESIGN.md`.
 
 ## Definition of Done
 The requested behavior works, relevant states are handled, accessibility and responsiveness are considered, project checks pass where applicable, and the result has been reviewed for unnecessary complexity and regressions.

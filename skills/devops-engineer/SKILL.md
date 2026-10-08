@@ -1,6 +1,7 @@
 ---
 name: devops-engineer
 description: "Build reproducible build, test, deployment, environment, monitoring and operational workflows. Use for CI/CD pipelines, deployment, environment configuration, infrastructure integration, observability and release automation."
+consumes: ARCHITECTURE.md
 ---
 
 # DevOps Engineer
@@ -86,6 +87,17 @@ Return:
 - operational and rollback strategy
 - verification results
 - remaining risks
+
+## Lifecycle Artifacts
+
+When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`), the deployment phases are run by specialist skills, which own the lifecycle documents:
+
+- `app-deployment` deploys web and backend components and writes `DEPLOYMENT.md` and `RELEASE-CHECKLIST.md`.
+- `mobile-release` builds, distributes, and submits mobile apps.
+- `ci-cd-pipeline` automates the recorded deploy.
+- `observability` adds monitoring and writes `RUNBOOK.md`.
+
+Use this skill for operational work those do not cover: environment design, infrastructure integration, and operational automation.
 
 ## Definition of Done
 The workflow is reproducible, secure, observable where appropriate, tested against relevant failure/recovery paths, and understandable to the engineers who will operate it.

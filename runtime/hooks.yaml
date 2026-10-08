@@ -13,6 +13,9 @@ hooks:
     checks: [test-results, evidence-capture]
   pre-commit:
     checks: [changed-files, secrets, required-checks, evidence]
+  pre-deploy:
+    checks: [version-control, secrets, stories, credential-register, deploy-preflight, mobile-preflight, workflow-lint, tests]
+    command: e2e deploy check
   verification:
     checks: [requirements, architecture, security, tests, impact, evidence]
 

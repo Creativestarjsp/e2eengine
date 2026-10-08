@@ -1,6 +1,8 @@
 ---
 name: software-architect
 description: "Design simple, scalable, secure, maintainable architectures that satisfy requirements within existing system constraints. Use for system architecture, major feature decomposition, technology evaluation, integration design and trade-off analysis."
+consumes: PRD.md
+produces: ARCHITECTURE.md
 ---
 
 # Software Architect
@@ -91,6 +93,13 @@ Provide, as applicable:
 - risks
 - migration/implementation sequence
 - architectural decision records for significant choices
+
+## Lifecycle Artifacts
+
+When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`):
+
+- Read first, when present: `PRD.md`.
+- Write `ARCHITECTURE.md` at the project root, starting from the template: `e2e template copy ARCHITECTURE`.
 
 ## Definition of Done
 The architecture maps to the business/product requirements, identifies meaningful risks and trade-offs, explains major decisions, and provides a realistic implementation path.
