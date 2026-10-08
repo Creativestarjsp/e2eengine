@@ -81,7 +81,7 @@ E2E Engine is therefore an **engineering control and verification layer**, not j
 
 Bounded specialist workers perform implementation tasks and return structured results and evidence.
 
-Examples include frontend, backend, API, database, QA, security, credential-inventory, deployment, mobile release, DevOps, UI/UX, architecture, SEO, and web-intelligence work.
+Examples include frontend, backend, API, database, QA, security, credential-inventory, deployment, mobile release, DevOps, UI/UX, UX review, illustration, animation, motion, architecture, SEO, and web-intelligence work.
 
 ### SD2 — Orchestrator
 

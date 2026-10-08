@@ -1,0 +1,50 @@
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <title>An open folder with blank pages and a plus badge</title>
+  <style>
+    .primary{fill:#6366F1}
+    .primary-deep{fill:#4F46E5}
+    .tint{fill:#E0E7FF}
+    .paper{fill:#FFFFFF}
+    .line{fill:#CBD5E1}
+    .dark{fill:#1F2937}
+  </style>
+
+  <g id="ground">
+    <ellipse cx="400" cy="508" rx="236" ry="20" class="dark" opacity="0.08"/>
+  </g>
+
+  <g id="page-left" transform="rotate(-9 262 250)">
+    <rect x="182" y="150" width="160" height="200" rx="16" class="tint"/>
+    <rect x="206" y="182" width="88" height="12" rx="6" class="paper"/>
+    <rect x="206" y="210" width="112" height="12" rx="6" class="paper"/>
+    <rect x="206" y="238" width="72" height="12" rx="6" class="paper"/>
+  </g>
+
+  <g id="page-right" transform="rotate(8 548 232)">
+    <rect x="468" y="132" width="160" height="200" rx="16" class="tint"/>
+    <rect x="492" y="164" width="96" height="12" rx="6" class="paper"/>
+    <rect x="492" y="192" width="112" height="12" rx="6" class="paper"/>
+    <rect x="492" y="220" width="64" height="12" rx="6" class="paper"/>
+  </g>
+
+  <g id="folder">
+    <path class="primary-deep" d="M220 262a24 24 0 0 1 24-24h96a24 24 0 0 1 18.2 8.4l19 22.2a8 8 0 0 0 6.1 2.8H556a24 24 0 0 1 24 24v184a24 24 0 0 1-24 24H244a24 24 0 0 1-24-24z"/>
+    <rect id="sheet" x="262" y="256" width="276" height="120" rx="12" class="paper"/>
+    <rect x="290" y="276" width="120" height="10" rx="5" class="line"/>
+    <rect x="290" y="296" width="180" height="10" rx="5" class="line"/>
+    <path class="primary" d="M204 344a24 24 0 0 1 24-24h344a24 24 0 0 1 24 24l-14 142a24 24 0 0 1-24 22H242a24 24 0 0 1-24-22z"/>
+  </g>
+
+  <g id="add-badge">
+    <circle cx="566" cy="330" r="52" class="paper"/>
+    <circle cx="566" cy="330" r="42" class="dark"/>
+    <rect x="544" y="324" width="44" height="12" rx="6" class="paper"/>
+    <rect x="560" y="308" width="12" height="44" rx="6" class="paper"/>
+  </g>
+
+  <g id="sparkles">
+    <circle cx="640" cy="250" r="8" class="primary" opacity="0.5"/>
+    <circle cx="172" cy="400" r="10" class="tint"/>
+    <rect x="652" y="388" width="16" height="16" rx="4" class="tint" transform="rotate(45 660 396)"/>
+  </g>
+</svg>

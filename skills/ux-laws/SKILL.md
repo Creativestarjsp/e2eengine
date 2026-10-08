@@ -1,8 +1,10 @@
 ---
 name: ux-laws
-description: "Apply and audit established UX laws and human-computer interaction principles (Fitts, Hick, Jakob, Miller, Gestalt grouping, Doherty threshold, Tesler, Postel, and others) when designing, generating, or reviewing an interface. Use for a UX review or usability audit with scored, prioritized findings, for checking a design against UX laws, and for reducing cognitive load or improving touch targets, visual hierarchy, and loading, empty, error, and success states on phone and desktop."
-version: 1.0.0
+description: "Apply and audit established UX laws and human-computer interaction principles (Fitts, Hick, Jakob, Miller, Gestalt grouping, Doherty threshold, Tesler, Postel, and others) when designing, generating, or reviewing an interface. Use for a UX review or usability audit with scored, prioritized findings, for checking a design against UX laws, and to reduce cognitive load or improve touch targets, visual hierarchy, and loading, empty, error, and success states on phone and desktop."
+version: 1.1.0
 level: L2
+consumes: DESIGN.md
+produces: UX-REVIEW.md
 ---
 
 # UX Laws & Design Principles
@@ -56,7 +58,7 @@ Before generating, establish (assume and label what is unknown):
 ## Outputs
 
 - **Generating:** the interface or specification with the relevant principles applied to layout, navigation, component hierarchy, typography, spacing, CTAs, forms, modals, tables, cards, dashboards, empty, loading, error, and success states, responsive behaviour, accessibility, and interaction patterns. The laws are applied silently; they are explained only when asked.
-- **Reviewing:** the report in the format below.
+- **Reviewing:** the report in the format below. For a release review, written to `UX-REVIEW.md` (`e2e template copy UX-REVIEW`) with the path of each screen image that was looked at.
 
 ## Workflow
 
@@ -67,7 +69,7 @@ UNDERSTAND → SELECT LAWS → APPLY or AUDIT → PRIORITIZE → REPORT
 1. **Understand.** Answer the twelve questions above for the screen or flow. Identify the platform.
 2. **Select.** From `references/ux-laws.md`, pick the laws that bear on this interface and task. Add the platform rules from `references/platform-and-accessibility.md`.
 3. **Apply (generating).** Design the hierarchy around the primary action, then the states, then responsive behaviour. Resolve conflicts with the priority order below.
-4. **Audit (reviewing).** Walk the primary task step by step. For each significant problem record what was observed, where, the applicable principle, why it harms the user, and a specific fix.
+4. **Audit (reviewing).** For built screens, capture and look at them first (`references/visual-review.md`); a review of a running product that rests on source code alone is incomplete. Walk the primary task step by step. For each significant problem record what was observed, where, the applicable principle, why it harms the user, and a specific fix.
 5. **Prioritize.** Classify each finding by its effect on task completion.
 6. **Report.** Scores, problems by priority, and what could not be assessed.
 
@@ -129,6 +131,7 @@ What could not be judged from the material provided, and what would be needed.
 
 | Situation | Action |
 | --- | --- |
+| No browser available to capture built screens | Capture with the browser skill or ask for screenshots; otherwise state at the top of the report that the screens were not looked at. |
 | Only a static screenshot is available | Review what is visible; mark interaction, responsiveness, and performance as not assessed. |
 | User, goal, or platform unknown | State labeled assumptions and proceed; a wrong assumption about the primary goal changes the findings, so say so. |
 | Two laws point in opposite directions | Apply the decision priority and report the trade-off. |
@@ -141,11 +144,20 @@ What could not be judged from the material provided, and what would be needed.
 - Priorities follow the definitions: only task-blocking problems are Critical.
 - Scores are consistent with the findings; no dimension is scored without evidence.
 - Generated interfaces cover loading, empty, error, and success states, and work at mobile and desktop widths.
+- For built screens: images exist for each reviewed screen at a phone and a desktop width, and the report cites them. `python skills/ux-laws/scripts/capture_screens.py` exits 0, or the report states that screens were not looked at.
 - Baseline accessibility holds: contrast, focus states, keyboard access, labels, touch target size, no meaning by colour alone.
 
 ## Examples
 
-`examples/review-example.md` is a complete review of a mobile checkout screen in the report format.
+`examples/review-example.md` is a complete review of a mobile checkout screen in the report format. `references/visual-review.md` describes capturing and inspecting built screens.
+
+## Lifecycle Artifacts
+
+When the project follows a blueprint (`architecture/BLUEPRINTS-AND-STORIES.md`), this skill runs in the `harden` phase:
+
+- Read first: `DESIGN.md` and the stories' acceptance criteria.
+- Capture every screen and look at the images (`references/visual-review.md`).
+- Write `UX-REVIEW.md` at the project root. Critical and High findings are correction tasks for the developer skills before release.
 
 ## Definition of Done
 

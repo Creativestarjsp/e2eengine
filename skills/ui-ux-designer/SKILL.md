@@ -121,6 +121,10 @@ Provide:
 - content guidance
 - implementation notes
 
+## Screen Patterns
+
+Start each screen from the matching pattern in `references/screen-patterns.md` (navigation shell, sign-in, onboarding, dashboard, list and detail, search, forms, settings, checkout, profile, notifications, and the states every screen has). Adapt it to the product and record any deviation and its reason in `DESIGN.md`. Decide whether a view needs artwork with the `vector-illustration` skill; most do not. Specify transitions and feedback in the `## Motion` table of `DESIGN.md` using `ui-motion`'s tokens.
+
 ## UX Principles
 
 When creating or changing a screen, apply the relevant laws in `skills/ux-laws/references/ux-laws.md` and the rules in `skills/ux-laws/references/platform-and-accessibility.md`. Apply them in the work itself; do not narrate them. For a scored review of an existing interface, use the `ux-laws` skill.

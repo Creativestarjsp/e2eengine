@@ -23,7 +23,8 @@ PRD.md
   → contracts     database-engineer → api-developer → DATA-MODEL.md, API-CONTRACT.md
                   ui-ux-designer                    → DESIGN.md
   → build         backend ∥ web ∥ mobile ∥ qa       → every story done, with evidence
-  → harden        security, code review, credentials → CREDENTIALS.md
+  → harden        security, code review, credentials, → CREDENTIALS.md, UX-REVIEW.md
+                  UX review of the built screens
   → preview       app-deployment → ci-cd-pipeline,  → DEPLOYMENT.md, RELEASE-CHECKLIST.md
                   mobile-release
   → release       app-deployment → mobile-release,  → RUNBOOK.md
@@ -79,6 +80,18 @@ Format: `templates/STORY.md`. Authoring method: `skills/story-writer/SKILL.md`.
 Inside a blueprint, a story can be planned only in the phase that sets
 `requires_stories_done`; asking earlier yields a blocker naming the phase that
 must finish first.
+
+## Design Quality
+
+Three things raise the quality of what gets designed and built:
+
+- **Screen patterns.** `ui-ux-designer` starts each screen from a proven pattern (`skills/ui-ux-designer/references/screen-patterns.md`) and records deviations in `DESIGN.md`.
+- **Illustration.** `vector-illustration` decides whether a view needs artwork at all, produces original SVG, validates it (`svg_check.py`), and renders it for review (`render_preview.py`). When generated artwork is not good enough, a person downloads a replacement from unDraw; the agent never crawls or downloads from that site.
+- **Motion.** `lottie-animation` authors loaders, success feedback, and microinteractions as Lottie files, using the vendored `text-to-lottie` method (MIT, from diffusionstudio/lottie) with our own checker (`lottie_check.py`) and a CanvasKit/Skottie frame renderer (`lottie_preview.mjs`), so a browser player is not needed to verify them.
+- **Motion in components.** `ui-motion` specifies and implements transitions, feedback, enter/exit, layout and gesture motion with CSS and Motion on web and Reanimated on React Native; reduced motion is mandatory and `motion_check.py` fails a project that animates without handling it.
+- **Visual review.** In the `harden` phase `ux-laws` captures every built screen at a phone and a desktop width (`capture_screens.py`), looks at the images, and writes `UX-REVIEW.md`. Critical and High findings go back to the developer skills before release.
+
+These checks need a browser to render. Without one the scripts say so, and the review must state that the screens were not looked at.
 
 ## Deployment Phases
 

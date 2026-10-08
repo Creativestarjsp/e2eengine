@@ -65,17 +65,19 @@
     },
     {
       "id": "harden",
-      "objective": "Security review, code review, and a complete credential register.",
+      "objective": "Security review, code review, a complete credential register, and a UX review of the built screens.",
       "depends_on": [
         "build"
       ],
       "skills": [
         "security-engineer",
         "code-reviewer",
-        "credential-inventory"
+        "credential-inventory",
+        "ux-laws"
       ],
       "produces": [
-        "CREDENTIALS.md"
+        "CREDENTIALS.md",
+        "UX-REVIEW.md"
       ]
     },
     {

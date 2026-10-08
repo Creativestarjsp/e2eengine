@@ -30,7 +30,7 @@ def test_all_twenty_two_laws_are_in_the_reference():
 def test_cited_files_exist():
     text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
     cited = set(re.findall(r"`((?:references|examples)/[\w./-]+\.md)`", text))
-    assert cited == {"references/ux-laws.md", "references/platform-and-accessibility.md", "examples/review-example.md"}
+    assert cited == {"references/ux-laws.md", "references/platform-and-accessibility.md", "references/visual-review.md", "examples/review-example.md"}
     for rel in cited:
         assert (SKILL / rel).is_file(), rel
 
